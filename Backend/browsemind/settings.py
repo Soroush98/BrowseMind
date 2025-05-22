@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+from huey import SqliteHuey
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,7 +40,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
+    'huey.contrib.djhuey',
 ]
+
+HUEY = {
+    'huey_class': 'huey.SqliteHuey',
+    'name': 'my-app',
+    'immediate': False,
+    'connection': {'filename': 'huey.db'},
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

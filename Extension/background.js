@@ -1,20 +1,29 @@
-chrome.webNavigation.onCompleted.addListener(async (details) => {
-  const url = details.url;
-  if (url.startsWith("http")) {
-    console.log("Navigated to:", url);
+chrome.action.onClicked.addListener((tab) => {
+  fetch('https://127.0.0.1:8000/api/session', { credentials: 'include' })
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.valid) {
+        chrome.windows.create({ url: 'monitoring.html', type: 'popup', width: 420, height: 400 });
+      } else {
+        chrome.windows.create({ url: 'popup.html', type: 'popup', width: 420, height: 400 });
+      }
+    })
+    .catch(() => {
+      chrome.windows.create({ url: 'popup.html', type: 'popup', width: 420, height: 400 });
+    });
+});
 
-    // Send the URL to your Django server
-    try {
-      await fetch("http://127.0.0.1:8000/api/analyze_url/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ url })
-      });
-      console.log("URL sent to server:", url);
-    } catch (error) {
-      console.error("Error sending URL to server:", error);
-    }
+// Example background.js logic
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Extension installed");
+});
+
+// Check session data in chrome.storage.local
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'checkSession') {
+    chrome.storage.local.get('email', (result) => {
+      sendResponse({ email: result.email || null });
+    });
+    return true; // Keep the message channel open for async response
   }
 });
