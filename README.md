@@ -1,6 +1,6 @@
 # Browsemind
 
-Browsemind is a browser extension and Django backend project that tracks your browsing habits and visualizes how much of your time is spent in different website categories. It helps you understand your online behavior by showing the percentage of your time spent on categories such as news, social media, communication, entertainment, education, shopping, and more (see the code for the full list of categories).
+Browsemind is a browser extension and Django backend project that tracks your browsing habits and visualizes how much of your time is spent in different website categories. It helps you understand your online behavior by showing the percentage of your time spent on categories such as news, social media, communication, entertainment, education, shopping, and more.
 
 ## Features
 - Tracks time spent on each website and categorizes your browsing.
