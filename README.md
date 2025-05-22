@@ -17,7 +17,7 @@ The project uses a set of predefined categories, including:
 
 ### 1. Clone the repository
 ```
-git clone <your-repo-url>
+git clone https://github.com/Soroush98/BrowseMind.git
 cd browsemind
 ```
 
