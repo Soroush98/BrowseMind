@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Monitor",
+  "name": "Browsemind",
   "version": "1.0",
   "permissions": [
     "activeTab",
@@ -19,7 +19,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "Monitor"
+    "default_popup": "forms/forms.html",
+    "default_title": "Browsemind Monitoring tool"
   }
 }

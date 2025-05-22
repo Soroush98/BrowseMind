@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Websites Visited</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f9fb; }
+    .container { width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 32px 24px 24px 24px; }
+    .back-btn { margin-bottom: 24px; padding: 10px 28px; background: linear-gradient(90deg,#4F81BD,#C0504D); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s; }
+    .back-btn:hover { background: linear-gradient(90deg,#C0504D,#4F81BD); }
+    .websites-list { max-height: 400px; overflow-y: auto; margin-top: 12px; }
+    .website-item { margin-bottom: 18px; padding: 12px; border-radius: 8px; background: #f7f9fb; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .website-url { font-weight: bold; color: #4F81BD; }
+    .website-time { color: #888; font-size: 14px; }
+    h2 { color: #C0504D; margin-bottom: 18px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="back-btn" id="back-btn">Back</button>
+    <h2 id="category-title"></h2>
+    <div class="websites-list" id="websites-list"></div>
+  </div>
+  <script src="websites.js"></script>
+</body>
+</html>

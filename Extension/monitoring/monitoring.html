@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monitoring</title>
+  <script src="../chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { width: 400px; margin: 40px auto; }
+    #piechart_3d { width: 400px; height: 300px; }
+  </style>
+</head>
+<body>
+  <div class="container" style="width: 600px; margin: 40px auto;">
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 20px;">
+      <div style="display: flex; flex-direction: column; align-items: flex-start;">
+        <label for="timezone-select" style="font-weight: bold; margin-bottom: 4px; text-align: left;">Timezone:</label>
+        <select id="timezone-select" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; min-width: 180px; text-align: left;">
+          <option value="UTC">UTC</option>
+          <option value="Europe/London">Europe/London</option>
+          <option value="Europe/Berlin">Europe/Berlin</option>
+          <option value="Europe/Paris">Europe/Paris</option>
+          <option value="Asia/Tehran">Asia/Tehran</option>
+          <option value="Asia/Dubai">Asia/Dubai</option>
+          <option value="Asia/Kolkata">Asia/Kolkata</option>
+          <option value="Asia/Shanghai">Asia/Shanghai</option>
+          <option value="Asia/Tokyo">Asia/Tokyo</option>
+          <option value="America/New_York">America/New_York</option>
+          <option value="America/Chicago">America/Chicago</option>
+          <option value="America/Denver">America/Denver</option>
+          <option value="America/Los_Angeles">America/Los_Angeles</option>
+          <option value="Australia/Sydney">Australia/Sydney</option>
+          <option value="America/Toronto">America/Toronto (Canada)</option>
+          <option value="America/Vancouver">America/Vancouver (Canada)</option>
+          <option value="America/Edmonton">America/Edmonton (Canada)</option>
+          <option value="America/Winnipeg">America/Winnipeg (Canada)</option>
+          <option value="America/Halifax">America/Halifax (Canada)</option>
+          <option value="America/St_Johns">America/St_Johns (Canada)</option>
+        </select>
+      </div>
+      <div id="user-info" style="font-size: 15px; color: #4F81BD; font-weight: bold; text-align: right;"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+      <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <div style="display: flex; gap: 16px; margin-bottom: 10px; align-items: flex-end; justify-content: center; width: 100%;">
+          <div style="display: flex; flex-direction: column; align-items: flex-start;">
+            <label for="from-date" style="font-weight: bold; margin-bottom: 4px;">From:</label>
+            <input type="datetime-local" id="from-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px;" />
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-start;">
+            <label for="to-date" style="font-weight: bold; margin-bottom: 4px;">To:</label>
+            <input type="datetime-local" id="to-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px;" />
+          </div>
+          <button id="date-submit" style="align-self: flex-end; padding: 8px 18px; background: #4F81BD; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s;">Submit</button>
+        </div>
+      </div>
+    </div>
+    <canvas id="piechart_3d" style="width: 600px; height: 400px;"></canvas>
+    <div id="category-listing" style="max-height: 300px; overflow-y: auto; margin: 32px auto 0 auto; width: 90%; background: #f7f9fb; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 18px 18px 8px 18px; display: none;"></div>
+    <div style="display: flex; justify-content: center; margin-top: 30px;">
+      <button id="logout-btn" style="padding: 12px 36px; background: linear-gradient(90deg,#C0504D,#4F81BD); color: #fff; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;">Logout</button>
+    </div>
+  </div>
+  <script src="monitoring.js"></script>
+</body>
+</html>

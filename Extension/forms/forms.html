@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login / Register</title>
+  <link rel="stylesheet" href="forms.css">
+</head>
+<body>
+  <div class="container">
+    <div class="tab-header">
+      <button id="login-tab" class="tab active">Login</button>
+      <button id="register-tab" class="tab">Register</button>
+    </div>
+    <div id="login-form-wrapper">
+      <form id="loginForm" style="display: flex; flex-direction: column; gap: 16px; width: 320px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <label for="email" style="font-weight: bold; margin-bottom: 4px;">Email:</label>
+          <input type="email" id="email" name="email" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <label for="password" style="font-weight: bold; margin-bottom: 4px;">Password:</label>
+          <input type="password" id="password" name="password" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+        </div>
+        <button type="submit" style="padding: 10px 28px; background: linear-gradient(90deg,#4F81BD,#C0504D); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;">Login</button>
+      </form>
+    </div>
+    <div id="register-form-wrapper" class="hidden">
+      <form id="registerForm" style="display: flex; flex-direction: column; gap: 16px; width: 320px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <label for="reg-email" style="font-weight: bold; margin-bottom: 4px;">Email:</label>
+          <input type="email" id="reg-email" name="reg-email" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <label for="reg-password" style="font-weight: bold; margin-bottom: 4px;">Password:</label>
+          <input type="password" id="reg-password" name="reg-password" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <label for="reg-password2" style="font-weight: bold; margin-bottom: 4px;">Confirm Password:</label>
+          <input type="password" id="reg-password2" name="reg-password2" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+        </div>
+        <button type="submit" style="padding: 10px 28px; background: linear-gradient(90deg,#C0504D,#4F81BD); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;">Register</button>
+      </form>
+    </div>
+  </div>
+ 
+  <script src="forms.js"></script>
+</body>
+</html>

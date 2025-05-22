@@ -2,30 +2,43 @@ let lastUrl = location.href;
 let lastTimestamp = Date.now();
 
 const sendWebLogToApi = (url, timestamp, duration) => {
-  chrome.storage.local.get('email', (result) => {
+  chrome.storage.local.get(['email', 'jwt'], (result) => {
     const email = result.email || null;
-    if (!email) {
-      console.log("[!] Not sending weblog, user not logged in.");
+    const jwt = result.jwt || null;
+    if (!email || !jwt) {
+      console.log("[!] Not sending weblog, user not logged in or missing token.");
       return;
     }
-    sendWebLogToApiAsync(url, timestamp, duration, email);
+    // Check session validity
+    fetch("http://127.0.0.1:8000/api/session/", {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${jwt}` }
+    })
+    .then(res => res.ok ? res.json() : Promise.reject("Session invalid"))
+    .then(() => {
+      sendWebLogToApiAsync(url, timestamp, duration, jwt);
+    })
+    .catch(err => {
+      console.log("[!] Not sending weblog, session invalid:", err);
+    });
   });
 };
 
-async function sendWebLogToApiAsync(url, timestamp, duration, email) {
+async function sendWebLogToApiAsync(url, timestamp, duration, jwt) {
   try {
 
     let html = document.documentElement.outerHTML;
-    const weblog= await fetch("http://127.0.0.1:8000/api/weblog/", {
-        
+    const weblog = await fetch("http://127.0.0.1:8000/api/weblog/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`
+      },
       body: JSON.stringify({
-        html: html,
-        url: url,
-        timestamp: new Date(timestamp).toISOString(),
-        duration: duration,
-        email: email
+      html: html,
+      url: url,
+      timestamp: new Date(timestamp).toISOString(),
+      duration: duration
       }),
     });
     console.log("weblog", weblog);

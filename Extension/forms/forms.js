@@ -1,28 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('login-form');
-  const registerForm = document.getElementById('register-form');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
   const loginTab = document.getElementById('login-tab');
   const registerTab = document.getElementById('register-tab');
 
   loginTab.addEventListener('click', function () {
     loginTab.classList.add('active');
     registerTab.classList.remove('active');
-    loginForm.style.display = '';
-    registerForm.style.display = 'none';
+    document.getElementById('login-form-wrapper').classList.remove('hidden');
+    document.getElementById('register-form-wrapper').classList.add('hidden');
   });
 
   registerTab.addEventListener('click', function () {
     registerTab.classList.add('active');
     loginTab.classList.remove('active');
-    registerForm.style.display = '';
-    loginForm.style.display = 'none';
+    document.getElementById('register-form-wrapper').classList.remove('hidden');
+    document.getElementById('login-form-wrapper').classList.add('hidden');
   });
 
   loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
     if (!email || !password) {
       alert("Please enter both email and password.");
@@ -41,13 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
+      if (res.ok && data.success && data.token) {
         // Save session data in chrome.storage.local
-        chrome.storage.local.set({ email: email }, function() {
+        console.log(data.token);
+        chrome.storage.local.set({ email: email, jwt: data.token }, function() {
           console.log("[✓] Session stored in chrome.storage.local");
+          // Redirect to monitoring.html after successful login
+          window.location.href = '../monitoring/monitoring.html';
         });
-        // Redirect to monitoring.html after successful login
-        window.location.href = 'monitoring.html';
       } else {
         alert("❌ Login failed: " + (data.message || "Invalid credentials"));
       }
@@ -61,9 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
   registerForm.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-    const repeatPassword = document.getElementById('register-repeat-password').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const repeatPassword = document.getElementById('reg-password2').value;
 
     if (!email || !password || !repeatPassword) {
       alert("Please fill in all fields.");
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // If you want to check login status and redirect to monitoring.html if already logged in:
   chrome.storage.local.get('email', (result) => {
     if (result.email) {
-      window.location.href = 'monitoring.html';
+      window.location.href = '../monitoring/monitoring.html';
     }
   });
 

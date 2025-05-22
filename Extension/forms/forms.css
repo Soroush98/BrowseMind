@@ -1,0 +1,124 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f9fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  width: 420px;
+}
+
+.container {
+  width: 440px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  padding: 32px 24px 24px 24px;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #444;
+}
+
+input {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+input[type="email"], input[type="password"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"], #register-btn {
+  padding: 10px 28px;
+  background: linear-gradient(90deg, #4F81BD, #C0504D);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #004eaa;
+}
+
+button[type="submit"]:hover, #register-btn:hover {
+  background: linear-gradient(90deg, #C0504D, #4F81BD);
+}
+
+.hidden {
+  display: none;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #4F81BD;
+  padding: 10px 32px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin: 0 2px;
+}
+
+.tab.active {
+  background: #fff;
+  color: #C0504D;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+#login-form-wrapper, #register-form-wrapper {
+  width: 100%;
+}
