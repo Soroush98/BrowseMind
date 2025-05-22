@@ -22,6 +22,10 @@ cd browsemind
 ```
 
 ### 2. Set up the Python backend
+- Go to Backend directory:
+ ```
+  cd Backend
+  ```
 - Create a virtual environment:
   ```
   python -m venv venv
