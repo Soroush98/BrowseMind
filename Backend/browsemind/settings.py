@@ -137,16 +137,11 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'OPTIONS',  # Ensure OPTIONS is allowed
-]
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "chrome-extension://pocbkcnicfhpepodfagdljbpinndkbji",
     "http://localhost:3000",
     "https://browsemind.net",
     "https://www.browsemind.net"
