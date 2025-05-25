@@ -1,39 +1,33 @@
+
 let lastUrl = location.href;
 let lastTimestamp = Date.now();
+const DOMAIN = "https://api.browsemind.net";
 
 const sendWebLogToApi = (url, timestamp, duration) => {
-  chrome.storage.local.get(['email', 'jwt'], (result) => {
-    const email = result.email || null;
-    const jwt = result.jwt || null;
-    if (!email || !jwt) {
-      console.log("[!] Not sending weblog, user not logged in or missing token.");
-      return;
-    }
     // Check session validity
-    fetch("http://127.0.0.1:8000/api/session/", {
+    fetch(DOMAIN + "/api/session/", {
       method: "GET",
-      headers: { "Authorization": `Bearer ${jwt}` }
+      credentials: "include",
     })
     .then(res => res.ok ? res.json() : Promise.reject("Session invalid"))
     .then(() => {
-      sendWebLogToApiAsync(url, timestamp, duration, jwt);
+      sendWebLogToApiAsync(url, timestamp, duration);
     })
     .catch(err => {
       console.log("[!] Not sending weblog, session invalid:", err);
     });
-  });
 };
 
-async function sendWebLogToApiAsync(url, timestamp, duration, jwt) {
+async function sendWebLogToApiAsync(url, timestamp, duration) {
   try {
 
     let html = document.documentElement.outerHTML;
-    const weblog = await fetch("http://127.0.0.1:8000/api/weblog/", {
+    const weblog = await fetch(DOMAIN + "/api/weblog/", {
       method: "POST",
       headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${jwt}`
+      "Content-Type": "application/json"
       },
+      credentials: "include",
       body: JSON.stringify({
       html: html,
       url: url,

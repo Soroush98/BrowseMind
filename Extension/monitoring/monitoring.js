@@ -1,4 +1,3 @@
-// monitoring.js
 const categories = [
   "news", "social media", "communication", "entertainment", "education", "shopping",
   "finance", "technology", "health", "travel", "government", "legal", "adult",
@@ -32,45 +31,30 @@ const chart = new Chart(ctx, {
     }
   }
 });
-
-chrome.storage.local.get(['email', 'jwt'], (result) => {
-  const email = result.email || null;
-  const jwt = result.jwt || null;
-  if (!email || !jwt) {
-    window.location.href = '../forms/forms.html';
-    return;
-  }
-  fetch('http://127.0.0.1:8000/api/session/', {
+(async () => {
+  fetch(DOMAIN + '/api/session/', {
     method: 'GET',
-    headers: { 'Authorization': 'Bearer ' + jwt }
+    credentials: 'include',
   })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.ok) {
-        chrome.storage.local.remove(['email', 'jwt'], () => {
-          window.location.href = '../forms/forms.html';
-        });
-      } else {
-        console.log("[✓] User is logged in as:", email);
-        const userInfoDiv = document.getElementById('user-info');
-        if (userInfoDiv) {
-          userInfoDiv.textContent = `User: ${email}`;
-        }
-      }
-    })
-    .catch(() => {
-      chrome.storage.local.remove(['email', 'jwt'], () => {
+    .then(res => {
+      if (!res.ok) {
         window.location.href = '../forms/forms.html';
-      });
+        return null;
+      }
+      return res.json();
+        })
+        .then(res => {
+      if (!res) return;
+      console.log("[✓] User is logged in as:", res.email);
+      const userInfoDiv = document.getElementById('user-info');
+      if (userInfoDiv) {
+        userInfoDiv.textContent = `User: ${res.email}`;
+      }
+        })
+        .catch(() => {
+      window.location.href = '../forms/forms.html';
     });
-});
-
-// Helper to get JWT from chrome.storage.local
-function getJwtToken(callback) {
-  chrome.storage.local.get('jwt', (result) => {
-    callback(result.jwt || null);
-  });
-}
+})();
 
 // Restore last used dates if available
 window.addEventListener('DOMContentLoaded', () => {
@@ -96,11 +80,15 @@ window.addEventListener('DOMContentLoaded', () => {
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', function() {
-    chrome.storage.local.remove(['email', 'jwt'], function() {
+    fetch(DOMAIN + '/api/logout/', {
+      method: 'POST',
+      credentials: 'include'
+    }).finally(() => {
       window.location.href = '../forms/forms.html';
     });
   });
 }
+
 
 // Store last used UTC dates for category click
 let lastFromUTC = null;
@@ -171,62 +159,19 @@ if (dateSubmitBtn) {
     const toUTC = toUTCString(toDate, timezone);
     lastFromUTC = fromUTC;
     lastToUTC = toUTC;
-    getJwtToken(function(jwt) {
-      if (!jwt) {
-        alert('Not authenticated. Please log in again.');
-        window.location.href = '../forms/forms.html';
-        return;
-      }
-      fetch('http://127.0.0.1:8000/api/selector/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-        body: JSON.stringify({ from: fromUTC, to: toUTC })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.shares) {
-          const sharesArr = categories.map(cat => (data.shares[cat] || 0));
-          chart.data.datasets[0].data = sharesArr;
-          // Hide chart labels/title if all shares are 0
-          if (sharesArr.every(val => val === 0)) {
-            if (chart.options.plugins && chart.options.plugins.title) {
-              chart.options.plugins.title.display = false;
-            }
-            chart.update();
-            document.getElementById('category-listing').style.display = 'none';
-            hideChartAndShowLogout();
-            // Show centered error div
-            let errorDiv = document.getElementById('no-data-error');
-            if (!errorDiv) {
-              errorDiv = document.createElement('div');
-              errorDiv.id = 'no-data-error';
-              errorDiv.style.display = 'flex';
-              errorDiv.style.justifyContent = 'center';
-              errorDiv.style.alignItems = 'center';
-              errorDiv.style.height = '200px';
-              errorDiv.style.fontSize = '20px';
-              errorDiv.style.color = '#C0504D';
-              errorDiv.style.fontWeight = 'bold';
-              errorDiv.style.textAlign = 'center';
-              errorDiv.textContent = 'No browsing data between these times';
-              document.querySelector('.container').appendChild(errorDiv);
-            } else {
-              errorDiv.style.display = 'flex';
-            }
-          } else {
-            if (chart.options.plugins && chart.options.plugins.title) {
-              chart.options.plugins.title.display = true;
-            }
-            chart.update();
-            document.getElementById('piechart_3d').style.display = 'block';
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) logoutBtn.style.display = '';
-            // Hide error div if present
-            let errorDiv = document.getElementById('no-data-error');
-            if (errorDiv) errorDiv.style.display = 'none';
-          }
-        } else {
-          chart.data.datasets[0].data = Array(categories.length).fill(0);
+    fetch(DOMAIN + '/api/selector/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ from: fromUTC, to: toUTC })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.shares) {
+        const sharesArr = categories.map(cat => (data.shares[cat] || 0));
+        chart.data.datasets[0].data = sharesArr;
+        // Hide chart labels/title if all shares are 0
+        if (sharesArr.every(val => val === 0)) {
           if (chart.options.plugins && chart.options.plugins.title) {
             chart.options.plugins.title.display = false;
           }
@@ -251,15 +196,52 @@ if (dateSubmitBtn) {
           } else {
             errorDiv.style.display = 'flex';
           }
+        } else {
+          if (chart.options.plugins && chart.options.plugins.title) {
+            chart.options.plugins.title.display = true;
+          }
+          chart.update();
+          document.getElementById('piechart_3d').style.display = 'block';
+          const logoutBtn = document.getElementById('logout-btn');
+          if (logoutBtn) logoutBtn.style.display = '';
+          // Hide error div if present
+          let errorDiv = document.getElementById('no-data-error');
+          if (errorDiv) errorDiv.style.display = 'none';
         }
-      })
-      .catch(err => {
+      } else {
         chart.data.datasets[0].data = Array(categories.length).fill(0);
+        if (chart.options.plugins && chart.options.plugins.title) {
+          chart.options.plugins.title.display = false;
+        }
         chart.update();
         document.getElementById('category-listing').style.display = 'none';
         hideChartAndShowLogout();
-        alert('Failed to send dates.');
-      });
+        // Show centered error div
+        let errorDiv = document.getElementById('no-data-error');
+        if (!errorDiv) {
+          errorDiv = document.createElement('div');
+          errorDiv.id = 'no-data-error';
+          errorDiv.style.display = 'flex';
+          errorDiv.style.justifyContent = 'center';
+          errorDiv.style.alignItems = 'center';
+          errorDiv.style.height = '200px';
+          errorDiv.style.fontSize = '20px';
+          errorDiv.style.color = '#C0504D';
+          errorDiv.style.fontWeight = 'bold';
+          errorDiv.style.textAlign = 'center';
+          errorDiv.textContent = 'No browsing data between these times';
+          document.querySelector('.container').appendChild(errorDiv);
+        } else {
+          errorDiv.style.display = 'flex';
+        }
+      }
+    })
+    .catch(err => {
+      chart.data.datasets[0].data = Array(categories.length).fill(0);
+      chart.update();
+      document.getElementById('category-listing').style.display = 'none';
+      hideChartAndShowLogout();
+      alert('Failed to send dates.');
     });
   });
 }
@@ -273,34 +255,27 @@ chart.options.onClick = function (evt, elements) {
     alert('Please select a date range first.');
     return;
   }
-  getJwtToken(function(jwt) {
-    if (!jwt) {
-      alert('Not authenticated. Please log in again.');
-      window.location.href = '../forms/forms.html';
-      return;
-    }
-    fetch('http://127.0.0.1:8000/api/category_listing/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
-      body: JSON.stringify({ from: lastFromUTC, to: lastToUTC, category })
+  fetch(DOMAIN + '/api/category_listing/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ from: lastFromUTC, to: lastToUTC, category })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && Array.isArray(data.websites)) {
+        // Save data to localStorage and navigate to websites.html
+        localStorage.setItem('websites_data', JSON.stringify({
+          category,
+          websites: data.websites
+        }));
+       
+        window.location.href = '../websites/websites.html';
+      } else {
+        alert('No websites found for this category in the selected range.');
+      }
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && Array.isArray(data.websites)) {
-          // Save data to localStorage and navigate to websites.html
-          localStorage.setItem('websites_data', JSON.stringify({
-            category,
-            websites: data.websites
-          }));
-         
-          window.location.href = '../websites/websites.html';
-        } else {
-          alert('No websites found for this category in the selected range.');
-        }
-      })
-      .catch(() => {
-        alert('Failed to load category listing.');
-      });
-  });
+    .catch(() => {
+      alert('Failed to load category listing.');
+    });
 };
-

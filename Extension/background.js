@@ -1,5 +1,7 @@
+importScripts('../config.js');
+
 chrome.action.onClicked.addListener((tab) => {
-  fetch('https://127.0.0.1:8000/api/session', { credentials: 'include' })
+  fetch(DOMAIN + '/api/session', { credentials: 'include' })
     .then(response => response.json())
     .then(data => {
       if (data && data.ok) {

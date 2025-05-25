@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/login/", {
+      const res = await fetch(DOMAIN + "/api/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -44,11 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok && data.success && data.token) {
         // Save session data in chrome.storage.local
         console.log(data.token);
-        chrome.storage.local.set({ email: email, jwt: data.token }, function() {
-          console.log("[✓] Session stored in chrome.storage.local");
-          // Redirect to monitoring.html after successful login
           window.location.href = '../monitoring/monitoring.html';
-        });
       } else {
         alert("❌ Login failed: " + (data.message || "Invalid credentials"));
       }
@@ -76,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/register/", {
+      const res = await fetch(DOMAIN + "/api/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -97,11 +93,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // If you want to check login status and redirect to monitoring.html if already logged in:
-  chrome.storage.local.get('email', (result) => {
-    if (result.email) {
+(async () => {
+  try {
+    const res = await fetch(DOMAIN + "/api/session/", {
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (data.ok) {
       window.location.href = '../monitoring/monitoring.html';
     }
-  });
+  } catch (err) {
+    // Ignore errors, user will see login/register forms
+  }
+})();
 
 });
