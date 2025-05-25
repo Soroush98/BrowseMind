@@ -1,5 +1,4 @@
-importScripts('../config.js');
-
+const DOMAIN = "https://api.browsemind.net";
 chrome.action.onClicked.addListener((tab) => {
   fetch(DOMAIN + '/api/session', { credentials: 'include' })
     .then(response => response.json())
@@ -49,7 +48,13 @@ async function sendWebLogToApiAsync(url, timestamp, duration, html) {
 
 // Listen for tab updates (URL changes)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url && !tab.url.startsWith('chrome')) {
+  if (
+    changeInfo.status === 'complete' &&
+    tab.url &&
+    !tab.url.startsWith('chrome') &&
+    !tab.url.startsWith('edge') &&
+    !tab.url.startsWith('about')
+  ) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: () => document.documentElement.outerHTML
@@ -70,7 +75,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Listen for tab activation (switching tabs)
 chrome.tabs.onActivated.addListener(activeInfo => {
   chrome.tabs.get(activeInfo.tabId, (tab) => {
-    if (tab.url && !tab.url.startsWith('chrome')) {
+    if (
+      tab.url &&
+      !tab.url.startsWith('chrome') &&
+      !tab.url.startsWith('edge') &&
+      !tab.url.startsWith('about')
+    ) {
       chrome.scripting.executeScript({
         target: { tabId: activeInfo.tabId },
         func: () => document.documentElement.outerHTML

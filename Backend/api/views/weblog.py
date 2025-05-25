@@ -35,7 +35,7 @@ def analyze_url(url, html_content):
             f"Categorize the following HTML content into one of these categories, only reply with category and nothing else. "
             f"If it wasn't in any of those categories reply generic:\n"
             f"{', '.join(categories)}.\n\n"
-            f"HTML Content:\n{html_content[:2000]}"
+            f"HTML Content:\n{html_content[:1000]}"
         )
 
         api_key = os.getenv("LLAMA_API_KEY")
@@ -66,6 +66,8 @@ def analyze_url(url, html_content):
 
     except Exception as e:
         print(f"Error in analyze_url: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            print("Response content:", e.response.text)
         return None
 
 
