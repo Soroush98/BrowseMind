@@ -24,6 +24,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "3.145.16.162",
     "api.browsemind.net",
     "browsemind.net",
     "www.browsemind.net",
