@@ -1,4 +1,5 @@
-const DOMAIN = "https://api.browsemind.net";
+// const DOMAIN = "https://api.browsemind.net";
+const DOMAIN = "http://localhost:8000"; // For local testing
 let lastUrl = location.href;
 let lastTimestamp = Date.now();
 
