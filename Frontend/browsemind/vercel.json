@@ -1,8 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://api.browsemind.net/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://api.browsemind.net/api/:path*"
     }
   ]
 }
