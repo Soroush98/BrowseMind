@@ -1,1 +1,1 @@
-export const DOMAIN = "https://browsemind.net";
+export const DOMAIN = "https://api.browsemind.net";
