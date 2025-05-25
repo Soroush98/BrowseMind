@@ -28,7 +28,7 @@ export default function Login() {
           </div>
         </header>
         <div className="px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
+          <div className="layout-content-container flex flex-col w-[512px]  py-5 max-w-[960px] flex-1">
             <h1 className="text-[#111418] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">Sign in to your account</h1>
             <p
                 className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline cursor-pointer"
