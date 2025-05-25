@@ -140,6 +140,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
+    "chrome-extension://*",
     "http://localhost:3000",
     "https://browsemind.net",
     "https://www.browsemind.net"
