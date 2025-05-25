@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://3.145.16.162/api/$1"
+      "destination": "https://api.browsemind.net/api/$1"
     }
   ]
 }
