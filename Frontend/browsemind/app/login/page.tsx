@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { DOMAIN } from "@/config";
 
 export default function Login() {
   return (
@@ -34,7 +35,7 @@ export default function Login() {
                 className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline cursor-pointer"
             >
                 <Link href="/register">
-                    Don't have an account? Register
+                    Don&apos;t have an account? Register
                 </Link>
             </p>
             <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
@@ -64,7 +65,7 @@ export default function Login() {
                 onClick={async () => {
                   const email = (document.querySelector('input[placeholder="Email address"]') as HTMLInputElement)?.value;
                   const password = (document.querySelector('input[placeholder="Password"]') as HTMLInputElement)?.value;
-                  const res = await fetch('http://localhost:8000/api/login/', {
+                  const res = await fetch(DOMAIN + '/api/login/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',

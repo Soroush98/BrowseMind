@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { DOMAIN } from "@/config";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function Dashboard() {
   // Fetch shares when dates change
   useEffect(() => {
     if (!fromDate || !toDate) return;
-    fetch("http://localhost:8000/api/selector/", {
+    fetch(DOMAIN + "/api/selector/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -52,7 +53,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/session/", {
+    fetch(DOMAIN + "/api/session/", {
       credentials: "include",
       headers: {
       },
@@ -64,7 +65,7 @@ export default function Dashboard() {
         } else {
           setEmail(data.email || "");
           // Fetch category shares after session check
-          fetch("http://localhost:8000/api/selector/", {
+          fetch(DOMAIN+ "/api/selector/", {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -143,7 +144,7 @@ export default function Dashboard() {
                   <button className="px-5 py-3 text-[#111418] text-base font-medium hover:bg-[#f0f2f4] text-left">Settings</button>
                   <button className="px-5 py-3 text-[#C0504D] text-base font-medium hover:bg-[#f0f2f4] text-left border-t border-[#f0f2f4]"
                     onClick={async () => {
-                      await fetch("http://localhost:8000/api/logout/", {
+                      await fetch(DOMAIN+ "/api/logout/", {
                         method: "POST",
                         credentials: "include"
                       });
@@ -162,7 +163,7 @@ export default function Dashboard() {
                 <p className="text-[#111418] text-4xl font-black leading-tight tracking-[-0.033em]">
                   {email ? `Good evening, ${email}` : "Good evening"}
                 </p>
-                <p className="text-[#637588] text-base font-normal leading-normal">Here's your activity summary for the past week</p>
+                <p className="text-[#637588] text-base font-normal leading-normal">Here&apos;s your activity summary for the past week</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-4 p-4">

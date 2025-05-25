@@ -1,7 +1,43 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
+import { DOMAIN } from "@/config";
 
 export default function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [agree, setAgree] = useState(true);
+  const [error, setError] = useState("");
+
+  async function handleRegister() {
+    setError("");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!agree) {
+      setError("You must agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
+    if (password !== repeatPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    const res = await fetch(DOMAIN + "/api/register/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      setError(data.message || "Registration failed.");
+    } else {
+      window.location.href = "/login";
+    }
+  }
+
   return (
     <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>
       <div className="layout-container flex h-full grow flex-col">
@@ -38,7 +74,8 @@ export default function Register() {
                 <input
                   placeholder="Email address"
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-14 placeholder:text-[#637588] p-[15px] text-base font-normal leading-normal"
-                  defaultValue=""
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
               </label>
             </div>
@@ -49,7 +86,8 @@ export default function Register() {
                   placeholder="Password"
                   type="password"
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-14 placeholder:text-[#637588] p-[15px] text-base font-normal leading-normal"
-                  defaultValue=""
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </label>
             </div>
@@ -60,7 +98,8 @@ export default function Register() {
                   placeholder="Repeat password"
                   type="password"
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-14 placeholder:text-[#637588] p-[15px] text-base font-normal leading-normal"
-                  defaultValue=""
+                  value={repeatPassword}
+                  onChange={e => setRepeatPassword(e.target.value)}
                 />
               </label>
             </div>
@@ -69,7 +108,8 @@ export default function Register() {
                 <input
                   type="checkbox"
                   className="h-5 w-5 rounded border-[#dce0e5] border-2 bg-transparent text-[#1980e6] checked:bg-[#1980e6] checked:border-[#1980e6] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-[#dce0e5] focus:outline-none"
-                  defaultChecked
+                  checked={agree}
+                  onChange={e => setAgree(e.target.checked)}
                 />
                 <p className="text-[#111418] text-base font-normal leading-normal">I agree to the BrowseMind Terms of Service and Privacy Policy.</p>
               </label>
@@ -77,10 +117,12 @@ export default function Register() {
             <div className="flex px-4 py-3 gap-2">
               <button
                 className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-white text-base font-bold leading-normal tracking-[0.015em]"
+                onClick={handleRegister}
               >
                 <span className="truncate">Create account</span>
               </button>
             </div>
+            {error && <p className="text-red-500 text-sm px-4">{error}</p>}
             <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">or</p>
             <div className="flex justify-stretch">
               <div className="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
