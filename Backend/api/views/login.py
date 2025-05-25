@@ -39,8 +39,17 @@ def login_view(request):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        
-        return JsonResponse({'success': True, 'message': 'Login successful', 'token': token})
+
+        response = JsonResponse({'success': True, 'message': 'Login successful', 'token': token})
+        response.set_cookie(
+            key='token',
+            value=token,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            max_age=7 * 24 * 60 * 60  # 7 days in seconds
+        )
+        return response
 
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)

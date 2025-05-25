@@ -9,11 +9,11 @@
     "storage"
   ],
   "content_scripts": [
-  {
-    "matches": ["<all_urls>"],
-    "js": ["content.js"]
-  }
- ],
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -21,5 +21,8 @@
   "action": {
     "default_popup": "forms/forms.html",
     "default_title": "Browsemind Monitoring tool"
+  },
+  "icons": {
+    "128": "BrowseMind.png"
   }
 }

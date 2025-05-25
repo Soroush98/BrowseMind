@@ -17,10 +17,9 @@ urls_table = dynamodb.Table('BM_URLs')
 weblogs_table = dynamodb.Table('BM_WebLogs')
 
 def get_email_from_jwt(request):
-    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-    if not auth_header.startswith('Bearer '):
+    token = request.COOKIES.get('token')
+    if not token:
         return None
-    token = auth_header.split(' ')[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         return payload.get('email')
