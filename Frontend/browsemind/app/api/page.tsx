@@ -195,7 +195,7 @@ export default function API() {
       "category": "productivity",
       "time_spent": 3600,
       "visit_count": 15,
-      "timestamp": "2024-01-15T10:30:00Z"
+      "timestamp": "2025-01-15T10:30:00Z"
     }
   ],
   "pagination": {
@@ -418,7 +418,7 @@ export default function API() {
               <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
                 <BarChart3 className="size-4 text-white" />
               </div>
-              <span className="text-[#637588] text-sm">© 2024 BrowseMind. All rights reserved.</span>
+              <span className="text-[#637588] text-sm">© 2025 BrowseMind. All rights reserved.</span>
             </div>
             <div className="flex gap-6">
               <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">

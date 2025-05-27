@@ -63,7 +63,7 @@ export default function Home() {
                   className="flex min-h-[500px] lg:min-h-[600px] flex-col gap-8 bg-cover bg-center bg-no-repeat rounded-2xl items-start justify-end px-8 lg:px-12 pb-12 lg:pb-16 shadow-2xl"
                   style={{
                     backgroundImage:
-                      'linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%), url("/placeholder.svg?height=600&width=960")',
+                      'linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%), url("/Browse.png?height=600&width=960")',
                   }}
                 >
                   <div className="flex flex-col gap-6 text-left max-w-2xl">
@@ -228,7 +228,7 @@ export default function Home() {
               <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
                 <BarChart3 className="size-4 text-white" />
               </div>
-              <span className="text-[#637588] text-sm">© 2024 BrowseMind. All rights reserved.</span>
+              <span className="text-[#637588] text-sm">© 2025 BrowseMind. All rights reserved.</span>
             </div>
             <div className="flex gap-6">
               <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">

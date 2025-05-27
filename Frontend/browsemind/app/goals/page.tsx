@@ -56,7 +56,7 @@ export default function Goals() {
       current: 45,
       unit: "minutes",
       status: "active",
-      deadline: "2024-02-01",
+      deadline: "2025-02-01",
       progress: 75,
     },
     {
@@ -68,7 +68,7 @@ export default function Goals() {
       current: 75,
       unit: "percent",
       status: "active",
-      deadline: "2024-01-31",
+      deadline: "2025-01-31",
       progress: 93.75,
     },
     {
@@ -80,7 +80,7 @@ export default function Goals() {
       current: 2,
       unit: "sessions",
       status: "active",
-      deadline: "2024-02-15",
+      deadline: "2025-02-15",
       progress: 66.67,
     },
     {
@@ -92,7 +92,7 @@ export default function Goals() {
       current: 25,
       unit: "minutes",
       status: "completed",
-      deadline: "2024-01-15",
+      deadline: "2025-01-15",
       progress: 100,
     },
   ]
@@ -101,19 +101,19 @@ export default function Goals() {
     {
       title: "First Goal Completed",
       description: "Completed your first productivity goal",
-      date: "2024-01-15",
+      date: "2025-01-15",
       icon: Trophy,
     },
     {
       title: "Week Streak",
       description: "Maintained goals for 7 consecutive days",
-      date: "2024-01-10",
+      date: "2025-01-10",
       icon: Target,
     },
     {
       title: "Focus Master",
       description: "Completed 20 focus sessions",
-      date: "2024-01-05",
+      date: "2025-01-05",
       icon: CheckCircle,
     },
   ]
@@ -465,7 +465,7 @@ export default function Goals() {
                 <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
                   <BarChart3 className="size-4 text-white" />
                 </div>
-                <span className="text-[#637588] text-sm">© 2024 BrowseMind. All rights reserved.</span>
+                <span className="text-[#637588] text-sm">© 2025 BrowseMind. All rights reserved.</span>
               </div>
               <div className="flex flex-wrap gap-6">
                 <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">

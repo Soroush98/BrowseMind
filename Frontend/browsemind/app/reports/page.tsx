@@ -43,7 +43,7 @@ export default function Reports() {
       name: "Weekly Productivity Report",
       type: "Productivity",
       dateRange: "Last 7 days",
-      createdAt: "2024-01-15",
+      createdAt: "2025-01-15",
       status: "Generated",
       size: "2.3 MB",
     },
@@ -52,7 +52,7 @@ export default function Reports() {
       name: "Social Media Usage Analysis",
       type: "Category Analysis",
       dateRange: "Last 30 days",
-      createdAt: "2024-01-12",
+      createdAt: "2025-01-12",
       status: "Generated",
       size: "1.8 MB",
     },
@@ -61,7 +61,7 @@ export default function Reports() {
       name: "Monthly Time Tracking",
       type: "Time Analysis",
       dateRange: "December 2023",
-      createdAt: "2024-01-01",
+      createdAt: "2025-01-01",
       status: "Generated",
       size: "4.1 MB",
     },
@@ -70,7 +70,7 @@ export default function Reports() {
       name: "Focus Session Report",
       type: "Focus Analysis",
       dateRange: "Last 14 days",
-      createdAt: "2024-01-10",
+      createdAt: "2025-01-10",
       status: "Processing",
       size: "-",
     },
@@ -343,7 +343,7 @@ export default function Reports() {
                 <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
                   <BarChart3 className="size-4 text-white" />
                 </div>
-                <span className="text-[#637588] text-sm">© 2024 BrowseMind. All rights reserved.</span>
+                <span className="text-[#637588] text-sm">© 2025 BrowseMind. All rights reserved.</span>
               </div>
               <div className="flex flex-wrap gap-6">
                 <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
