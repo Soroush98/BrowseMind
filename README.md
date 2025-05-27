@@ -53,14 +53,41 @@ python manage.py runserver
 ```
 python manage.py run_huey
 ```
+## Requirements
+See `requirements.txt` for the full list of Python dependencies.
 
 ### 7. Load the extension in your browser
 - Go to your browser's extensions page.
 - Enable Developer Mode.
 - Load the `Extension` folder as an unpacked extension.
 
-## Requirements
-See `requirements.txt` for the full list of Python dependencies.
+
+### 8. Running the Frontend in Development
+
+The website is built with Next.js and is located in the `Frontend/browsemind` directory.
+1. Go to the frontend directory:
+   ```
+   cd Frontend/browsemind
+   ```
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the development server:
+   ```
+   npm run dev
+   ```
+4. The site will be available at [http://localhost:3000](http://localhost:3000).
+
+- The production website is [https://browsemind.net](https://browsemind.net)
+- The API is served by the Django backend at [https://api.browsemind.net](https://api.browsemind.net)
+
+## App Sections
+- **Dashboard, Explore, Reports, and Goals**: These sections are under active development and will provide advanced analytics, exploration tools, and goal tracking for your browsing habits.
+
+## Contributing
+If you want to contribute or develop for Browsemind, please contact soroosh.esmaeilian@gmail.com.
+
 
 ## Notes
 - The extension uses JWT for authentication and stores your browsing data securely.
