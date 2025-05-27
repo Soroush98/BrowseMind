@@ -85,3 +85,36 @@ def category_listing_view(request):
         return JsonResponse({'success': True, 'websites': websites})
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+@csrf_exempt
+def top_websites_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Only POST allowed'}, status=405)
+    try:
+        email = get_email_from_jwt(request)
+        if not email:
+            return JsonResponse({'success': False, 'message': 'Invalid or missing JWT'}, status=401)
+        data = json.loads(request.body)
+        from_date = data.get('from')
+        to_date = data.get('to')
+        if not from_date or not to_date:
+            return JsonResponse({'success': False, 'message': 'Both from and to dates are required'}, status=400)
+        scan_response = weblogs_table.scan()
+        items = scan_response.get('Items', [])
+        # Filter by timestamp and email
+        filtered = [item for item in items if from_date <= item.get('timestamp', '') <= to_date and item.get('email') == email]
+        # Aggregate by url
+        url_stats = {}
+        for item in filtered:
+            url = item.get('url')
+            duration = int(item.get('duration', 0))
+            if url:
+                if url not in url_stats:
+                    url_stats[url] = {'url': url, 'visits': 0, 'total_time': 0}
+                url_stats[url]['visits'] += 1
+                url_stats[url]['total_time'] += duration
+        # Get top 10 by total_time
+        top_websites = sorted(url_stats.values(), key=lambda x: x['total_time'], reverse=True)[:10]
+        return JsonResponse({'success': True, 'top_websites': top_websites})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
