@@ -2,24 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Websites Visited</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f7f9fb; }
-    .container { width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: 32px 24px 24px 24px; }
-    .back-btn { margin-bottom: 24px; padding: 10px 28px; background: linear-gradient(90deg,#4F81BD,#C0504D); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s; }
-    .back-btn:hover { background: linear-gradient(90deg,#C0504D,#4F81BD); }
-    .websites-list { max-height: 400px; overflow-y: auto; margin-top: 12px; }
-    .website-item { margin-bottom: 18px; padding: 12px; border-radius: 8px; background: #f7f9fb; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-    .website-url { font-weight: bold; color: #4F81BD; }
-    .website-time { color: #888; font-size: 14px; }
-    h2 { color: #C0504D; margin-bottom: 18px; }
-  </style>
+  <title>BrowseMind - Websites Visited</title>
+  <link rel="stylesheet" href="websites.css" />
 </head>
 <body>
-  <div class="container">
-    <button class="back-btn" id="back-btn">Back</button>
-    <h2 id="category-title"></h2>
-    <div class="websites-list" id="websites-list"></div>
+  <div class="extension-container">
+    <div class="header">
+      <div class="header-content">
+        <button class="back-btn" id="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+        <div class="title-section">
+          <h1 class="category-title" id="category-title">Loading...</h1>
+          <div class="breadcrumb">
+            <span>Dashboard</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>Category Details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="stats-grid" id="stats-bar">
+        <div class="stat-card">
+          <div class="stat-icon sites">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <p class="stat-value" id="total-sites">0</p>
+            <p class="stat-label">Sites</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon time">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <p class="stat-value" id="total-time">0m</p>
+            <p class="stat-label">Time</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon visits">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <p class="stat-value" id="total-visits">0</p>
+            <p class="stat-label">Visits</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="websites-section">
+        <div class="section-header">
+          <h2 class="section-title">Website Activity</h2>
+          <button class="export-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Export
+          </button>
+        </div>
+        
+        <div class="websites-list" id="websites-list">
+          <div class="empty-state">
+            <div class="loading-spinner">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="60" stroke-dashoffset="60">
+                  <animate attributeName="stroke-dashoffset" dur="2s" values="60;0" repeatCount="indefinite"/>
+                </circle>
+              </svg>
+            </div>
+            <h3 class="empty-title">Loading websites...</h3>
+            <p class="empty-description">Fetching your browsing data</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="websites.js"></script>
 </body>

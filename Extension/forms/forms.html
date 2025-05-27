@@ -2,44 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login / Register</title>
+  <title>BrowseMind - Login / Register</title>
   <link rel="stylesheet" href="forms.css">
 </head>
 <body>
-  <div class="container">
-    <div class="tab-header">
-      <button id="login-tab" class="tab active">Login</button>
-      <button id="register-tab" class="tab">Register</button>
-    </div>
-    <div id="login-form-wrapper">
-      <form id="loginForm" style="display: flex; flex-direction: column; gap: 16px; width: 320px;">
-        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-          <label for="email" style="font-weight: bold; margin-bottom: 4px;">Email:</label>
-          <input type="email" id="email" name="email" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
+  <div class="extension-wrapper">
+    <div class="container">
+      <!-- Header with Logo -->
+      <div class="header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1>BrowseMind</h1>
+            <p class="subtitle">Digital habit insights</p>
+          </div>
         </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-          <label for="password" style="font-weight: bold; margin-bottom: 4px;">Password:</label>
-          <input type="password" id="password" name="password" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
-        </div>
-        <button type="submit" style="padding: 10px 28px; background: linear-gradient(90deg,#4F81BD,#C0504D); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;">Login</button>
-      </form>
-    </div>
-    <div id="register-form-wrapper" class="hidden">
-      <form id="registerForm" style="display: flex; flex-direction: column; gap: 16px; width: 320px;">
-        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-          <label for="reg-email" style="font-weight: bold; margin-bottom: 4px;">Email:</label>
-          <input type="email" id="reg-email" name="reg-email" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-          <label for="reg-password" style="font-weight: bold; margin-bottom: 4px;">Password:</label>
-          <input type="password" id="reg-password" name="reg-password" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-start;">
-          <label for="reg-password2" style="font-weight: bold; margin-bottom: 4px;">Confirm Password:</label>
-          <input type="password" id="reg-password2" name="reg-password2" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; width: 100%;" required />
-        </div>
-        <button type="submit" style="padding: 10px 28px; background: linear-gradient(90deg,#C0504D,#4F81BD); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;">Register</button>
-      </form>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-header">
+        <button id="login-tab" class="tab active">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Sign In
+        </button>
+        <button id="register-tab" class="tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 7a4 4 0 11-8 0 4 4 0 018 0zM20 8v6M23 11h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Sign Up
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form-wrapper" class="form-wrapper">
+        <form id="loginForm" class="form">
+          <div class="form-group">
+            <label for="email">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Email Address
+            </label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Password
+            </label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <span>Sign In to BrowseMind</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <div class="form-footer">
+            <a href="#" class="forgot-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Forgot password?
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form-wrapper" class="form-wrapper hidden">
+        <form id="registerForm" class="form">
+          <div class="form-group">
+            <label for="reg-email">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Email Address
+            </label>
+            <input type="email" id="reg-email" name="reg-email" placeholder="your@email.com" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Password
+            </label>
+            <input type="password" id="reg-password" name="reg-password" placeholder="Create a strong password" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-password2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Confirm Password
+            </label>
+            <input type="password" id="reg-password2" name="reg-password2" placeholder="Confirm your password" required />
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <span>Create Account</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <div class="form-footer">
+            <p class="terms-text">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
   <script src="../config.js"></script>
