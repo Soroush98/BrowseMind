@@ -15,6 +15,6 @@ urlpatterns = [
     path('status/', weblog_status_view, name ='weblog_status'),
     path('selector/', selector_view, name ='selector'),
     path('category_listing/', category_listing_view, name ='category_listing'),
-    path('session/', session_view, name ='session_view')
+    path('session/', session_view, name ='session_view'),
     path('top_websites/', top_websites_view, name='top_websites'),
 ]
