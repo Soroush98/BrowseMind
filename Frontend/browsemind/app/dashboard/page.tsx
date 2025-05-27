@@ -41,7 +41,7 @@ export default function Dashboard() {
             <div className="flex flex-wrap justify-between gap-3 p-4">
               <div className="flex min-w-72 flex-col gap-3">
                 <p className="text-[#111418] text-4xl font-black leading-tight tracking-[-0.033em]">Good evening, Alex</p>
-                <p className="text-[#637588] text-base font-normal leading-normal">Here's your activity summary for the past week</p>
+                <p className="text-[#637588] text-base font-normal leading-normal">Here&apos;s your activity summary for the past week</p>
               </div>
             </div>
             <div className="flex flex-wrap gap-4 p-4">

@@ -132,7 +132,7 @@ export default function Pricing() {
           <section className="px-6 lg:px-40 py-8 lg:py-16">
             <div className="max-w-[1200px] mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {plans.map((plan, index) => (
+                {plans.map((plan) => (
                   <Card
                     key={plan.name}
                     className={`relative group hover:shadow-xl transition-all duration-300 ${
@@ -179,7 +179,7 @@ export default function Pricing() {
 
                       <div className="space-y-4">
                         <h4 className="font-semibold text-[#111418] text-sm uppercase tracking-wide">
-                          What's included:
+                          What&apos;s included:
                         </h4>
                         <ul className="space-y-3">
                           {plan.features.map((feature, featureIndex) => (
@@ -256,7 +256,7 @@ export default function Pricing() {
                 <div className="border-b border-[#f0f2f4] pb-6">
                   <h3 className="text-[#111418] text-lg font-bold mb-3">What happens after my free month ends?</h3>
                   <p className="text-[#637588] leading-relaxed">
-                    After your free month, you'll automatically be enrolled in the Basic plan at $30/month. You can
+                    After your free month, you&apos;ll automatically be enrolled in the Basic plan at $30/month. You can
                     upgrade, downgrade, or cancel at any time from your account settings.
                   </p>
                 </div>
@@ -264,7 +264,7 @@ export default function Pricing() {
                 <div className="border-b border-[#f0f2f4] pb-6">
                   <h3 className="text-[#111418] text-lg font-bold mb-3">Can I cancel anytime?</h3>
                   <p className="text-[#637588] leading-relaxed">
-                    Yes, you can cancel your subscription at any time. You'll continue to have access to your plan
+                    Yes, you can cancel your subscription at any time. You&apos;ll continue to have access to your plan
                     features until the end of your current billing period.
                   </p>
                 </div>
@@ -280,7 +280,7 @@ export default function Pricing() {
                 <div className="border-b border-[#f0f2f4] pb-6">
                   <h3 className="text-[#111418] text-lg font-bold mb-3">Do you offer refunds?</h3>
                   <p className="text-[#637588] leading-relaxed">
-                    Yes, we offer a 30-day money-back guarantee on all paid plans. If you're not satisfied, contact our
+                    Yes, we offer a 30-day money-back guarantee on all paid plans. If you&apos;re not satisfied, contact our
                     support team for a full refund.
                   </p>
                 </div>

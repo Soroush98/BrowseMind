@@ -160,7 +160,7 @@ export default function API() {
                   Quick Start
                 </h2>
                 <p className="text-[#637588] text-lg leading-relaxed max-w-2xl mx-auto">
-                  Get started with the BrowseMind API in minutes. Here's a simple example to fetch browsing data.
+                  Get started with the BrowseMind API in minutes. Here&apos;s a simple example to fetch browsing data.
                 </p>
               </div>
 
@@ -390,7 +390,7 @@ export default function API() {
                 Ready to start building?
               </h2>
               <p className="text-white/90 text-lg lg:text-xl leading-relaxed mb-8 max-w-2xl mx-auto">
-                Get your API key today and start integrating BrowseMind's powerful analytics into your applications.
+                Get your API key today and start integrating BrowseMind&apos;s powerful analytics into your applications.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
