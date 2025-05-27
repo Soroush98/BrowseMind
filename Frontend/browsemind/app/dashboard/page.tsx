@@ -1,152 +1,545 @@
-import React from "react";
+"use client"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  BarChart3,
+  Clock,
+  TrendingUp,
+  Target,
+  AlertCircle,
+  Calendar,
+  Settings,
+  LogOut,
+  Plus,
+  Filter,
+  Download,
+} from "lucide-react"
+
+// Mock DOMAIN for demo purposes
+const DOMAIN = "https://api.browsemind.net"
 
 export default function Dashboard() {
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [categoryShares, setCategoryShares] = useState<{ [key: string]: number }>({})
+  const [fromDate, setFromDate] = useState("")
+  const [toDate, setToDate] = useState("")
+  type TopWebsite = {
+    site: string
+    category: string
+    time: string
+    visits: number
+    productive: boolean
+  }
+  const [topWebsites, setTopWebsites] = useState<TopWebsite[]>([])
+  const categories = [
+    "news",
+    "social media",
+    "communication",
+    "entertainment",
+    "education",
+    "shopping",
+    "finance",
+    "technology",
+    "health",
+    "travel",
+    "government",
+    "legal",
+    "adult",
+    "religion",
+    "politics",
+    "career",
+    "real estate",
+    "automotive",
+    "food",
+    "lifestyle",
+    "sports",
+    "science",
+    "web services",
+    "email",
+    "illegal",
+  ]
+
+  // Helper to get ISO string in UTC from local datetime-local input
+  function toUTCISOString(local: string) {
+    if (!local) return ""
+    const d = new Date(local)
+    return d.toISOString()
+  }
+
+  // On page load, check session and fetch default shares
+  useEffect(() => {
+    async function fetchSessionAndShares() {
+      try {
+        const res = await fetch(DOMAIN + "/api/session", { credentials: "include" })
+        if (res.ok) {
+          const data = await res.json()
+          if (data && data.ok && data.email) {
+            setEmail(data.email)
+            // Set default dates (last week to now)
+            const now = new Date()
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+            const from = weekAgo.toISOString().slice(0, 16)
+            const to = now.toISOString().slice(0, 16)
+            setFromDate(from)
+            setToDate(to)
+            // Fetch shares
+            const sharesRes = await fetch(DOMAIN + "/api/selector/", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ from: toUTCISOString(from), to: toUTCISOString(to) }),
+            })
+            if (sharesRes.ok) {
+              const sharesData = await sharesRes.json()
+              if (sharesData.success && sharesData.shares) {
+                setCategoryShares(sharesData.shares)
+              } else {
+                // Set all shares to 0
+                const zeroShares = Object.fromEntries(categories.map((cat) => [cat, 0]))
+                setCategoryShares(zeroShares)
+              }
+            } else {
+              const zeroShares = Object.fromEntries(categories.map((cat) => [cat, 0]))
+              setCategoryShares(zeroShares)
+            }
+          } else {
+            window.location.href = "/"
+          }
+        } else {
+          window.location.href = "/"
+        }
+      } catch {
+        window.location.href = "/"
+      }
+    }
+    fetchSessionAndShares()
+  }, [router])
+
+  // Fetch top websites for the user (all categories)
+  async function fetchTopWebsites() {
+    setTopWebsites([])
+    const from = fromDate
+    const to = toDate
+    const res = await fetch(DOMAIN + "/api/top_websites/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ from: toUTCISOString(from), to: toUTCISOString(to) }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.success && Array.isArray(data.top_websites) && data.top_websites.length > 0) {
+        setTopWebsites(
+          data.top_websites.map((site: { url: string; total_time: number; visits: number }) => ({
+            site: site.url,
+            // category is not returned by top_websites view
+            time:
+              site.total_time >= 60 * 1000
+                ? `${Math.floor(site.total_time / (60 * 1000))}m ${Math.round((site.total_time % (60 * 1000)) / 1000)}s`
+                : `${Math.round(site.total_time / 1000)}s`,
+            visits: site.visits,
+            productive: false, // can't determine without category
+          }))
+        )
+      } else {
+        setTopWebsites([])
+      }
+    } else {
+      setTopWebsites([])
+    }
+  }
+
+  // Fetch top websites on initial load and when date changes
+  useEffect(() => {
+    if (fromDate && toDate) {
+      fetchTopWebsites()
+    }
+  }, [fromDate, toDate, fetchTopWebsites])
+
+  const handleLogout = async () => {
+    await fetch(DOMAIN + "/api/logout/", {
+      method: "POST",
+      credentials: "include",
+    })
+    router.replace("/")
+  }
+
+  const getInitials = (email: string) => {
+    return email
+      .split("@")[0]
+      .split(".")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  }
+
   return (
-    <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>
+    <div className="relative flex min-h-screen flex-col bg-gray-50">
       <div className="layout-container flex h-full grow flex-col">
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] px-10 py-3">
-          <div className="flex items-center gap-4 text-[#111418]">
-            <div className="size-4">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
-                  fill="currentColor"
-                />
-              </svg>
+        {/* Header */}
+        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] bg-white px-6 lg:px-10 py-4 shadow-sm">
+          <div className="flex items-center gap-3 text-[#111418]">
+            <div className="size-8 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded-lg flex items-center justify-center">
+              <BarChart3 className="size-5 text-white" />
             </div>
-            <h2 className="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">Web Habit</h2>
+            <h2 className="text-[#111418] text-xl font-bold leading-tight tracking-[-0.015em]">BrowseMind</h2>
           </div>
-          <div className="flex flex-1 justify-end gap-8">
-            <div className="flex items-center gap-9">
-              <a className="text-[#111418] text-sm font-medium leading-normal" href="#">Dashboard</a>
-              <a className="text-[#111418] text-sm font-medium leading-normal" href="#">Reports</a>
-              <a className="text-[#111418] text-sm font-medium leading-normal" href="#">Goals</a>
-              <a className="text-[#111418] text-sm font-medium leading-normal" href="#">Explore</a>
-            </div>
-            <button
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#1980e6] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+
+          <nav className="hidden md:flex items-center gap-8">
+            <a className="text-[#1980e6] text-sm font-medium leading-normal border-b-2 border-[#1980e6] pb-1" href="#">
+              Dashboard
+            </a>
+            <a
+              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
+              href="/reports"
             >
-              <span className="truncate">New Report</span>
-            </button>
-            <div
-              className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style={{ backgroundImage: 'url("https://cdn.usegalileo.ai/sdxl10/6cef6c51-7525-403c-b377-d382a8c24891.png")' }}
-            ></div>
+              Reports
+            </a>
+            <a
+              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
+              href="/goals"
+            >
+              Goals
+            </a>
+            <a
+              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
+              href="/explore"
+            >
+              Explore
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Button className="bg-[#1980e6] hover:bg-[#1570d1] text-white">
+              <Plus className="size-4 mr-2" />
+              New Report
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
+                    <AvatarFallback className="bg-[#1980e6] text-white">{getInitials(email)}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <div className="flex flex-col space-y-1 p-2">
+                  <p className="text-sm font-medium leading-none">{email}</p>
+                  <p className="text-xs leading-none text-muted-foreground">Free Plan</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
-        <div className="px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div className="flex flex-wrap justify-between gap-3 p-4">
-              <div className="flex min-w-72 flex-col gap-3">
-                <p className="text-[#111418] text-4xl font-black leading-tight tracking-[-0.033em]">Good evening, Alex</p>
-                <p className="text-[#637588] text-base font-normal leading-normal">Here&apos;s your activity summary for the past week</p>
-              </div>
+
+        <main className="flex-1 px-6 lg:px-10 py-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Welcome Section */}
+            <div className="space-y-2">
+              <h1 className="text-3xl lg:text-4xl font-black text-[#111418] tracking-[-0.033em]">
+                Good evening, {email.split("@")[0]}
+              </h1>
+              <p className="text-[#637588] text-lg">Here&apos;s your activity summary for the past week</p>
             </div>
-            <div className="flex flex-wrap gap-4 p-4">
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#dce0e5]">
-                <p className="text-[#111418] text-base font-medium leading-normal">Total time</p>
-                <p className="text-[#111418] tracking-light text-2xl font-bold leading-tight">20h 15m</p>
-              </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#dce0e5]">
-                <p className="text-[#111418] text-base font-medium leading-normal">Productivity</p>
-                <p className="text-[#111418] tracking-light text-2xl font-bold leading-tight">75%</p>
-              </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#dce0e5]">
-                <p className="text-[#111418] text-base font-medium leading-normal">Focus</p>
-                <p className="text-[#111418] tracking-light text-2xl font-bold leading-tight">85%</p>
-              </div>
-              <div className="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 border border-[#dce0e5]">
-                <p className="text-[#111418] text-base font-medium leading-normal">Distracted</p>
-                <p className="text-[#111418] tracking-light text-2xl font-bold leading-tight">15%</p>
-              </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[#637588] text-sm font-medium">Total Time</p>
+                      <p className="text-2xl font-bold text-[#111418]">20h 15m</p>
+                      <p className="text-xs text-green-600 mt-1">+2.5h from last week</p>
+                    </div>
+                    <div className="size-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Clock className="size-6 text-[#1980e6]" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[#637588] text-sm font-medium">Productivity</p>
+                      <p className="text-2xl font-bold text-[#111418]">75%</p>
+                      <p className="text-xs text-green-600 mt-1">+5% from last week</p>
+                    </div>
+                    <div className="size-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="size-6 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[#637588] text-sm font-medium">Focus Score</p>
+                      <p className="text-2xl font-bold text-[#111418]">85%</p>
+                      <p className="text-xs text-green-600 mt-1">+3% from last week</p>
+                    </div>
+                    <div className="size-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Target className="size-6 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[#637588] text-sm font-medium">Distractions</p>
+                      <p className="text-2xl font-bold text-[#111418]">15%</p>
+                      <p className="text-xs text-red-600 mt-1">-2% from last week</p>
+                    </div>
+                    <div className="size-12 bg-red-100 rounded-lg flex items-center justify-center">
+                      <AlertCircle className="size-6 text-red-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="flex flex-wrap gap-4 px-4 py-6">
-              <div className="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#dce0e5] p-6">
-                <p className="text-[#111418] text-base font-medium leading-normal">Sites visited</p>
-                <div className="grid min-h-[180px] gap-x-4 gap-y-6 grid-cols-[auto_1fr] items-center py-3">
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">Social Media</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '50%' }}></div></div>
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">Entertainment</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '70%' }}></div></div>
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">News</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '50%' }}></div></div>
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">Shopping</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '30%' }}></div></div>
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">Learning</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '80%' }}></div></div>
-                  <p className="text-[#637588] text-[13px] font-bold leading-normal tracking-[0.015em]">Work</p>
-                  <div className="h-full flex-1"><div className="border-[#637588] bg-[#f0f2f4] border-r-2 h-full" style={{ width: '60%' }}></div></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Category Breakdown */}
+              <Card className="lg:col-span-2 border-0 shadow-md">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl font-bold text-[#111418]">Category Breakdown</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm">
+                        <Filter className="size-4 mr-2" />
+                        Filter
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Download className="size-4 mr-2" />
+                        Export
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="size-4 text-[#637588]" />
+                      <label className="text-sm font-medium text-[#637588]">From:</label>
+                      <input
+                        type="datetime-local"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="border border-[#dce0e5] rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1980e6] focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="size-4 text-[#637588]" />
+                      <label className="text-sm font-medium text-[#637588]">To:</label>
+                      <input
+                        type="datetime-local"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="border border-[#dce0e5] rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#1980e6] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {Object.entries(categoryShares).map(([category, percentage]) => (
+                      <div key={category} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-[#111418] capitalize">{category}</span>
+                          <span className="text-sm font-bold text-[#637588]">{percentage.toFixed(1)}%</span>
+                        </div>
+                        <Progress value={percentage} className="h-2" />
+                      </div>
+                    ))}
+
+                    {categories
+                      .filter((cat) => !categoryShares[cat])
+                      .slice(0, 5)
+                      .map((cat) => (
+                        <div key={cat} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-[#637588] capitalize">{cat}</span>
+                            <span className="text-sm text-[#637588]">0%</span>
+                          </div>
+                          <Progress value={0} className="h-2" />
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Stats */}
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="text-xl font-bold text-[#111418]">Quick Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-[#637588]">Sites Visited</span>
+                      <span className="text-lg font-bold text-[#111418]">127</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-[#637588]">Avg. Session</span>
+                      <span className="text-lg font-bold text-[#111418]">12m</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-[#637588]">Peak Hour</span>
+                      <span className="text-lg font-bold text-[#111418]">2-3 PM</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#f0f2f4]">
+                    <h4 className="text-sm font-medium text-[#111418] mb-3">Goals Progress</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-[#637588]">Daily Productivity</span>
+                          <span className="text-xs font-medium">75/80%</span>
+                        </div>
+                        <Progress value={93.75} className="h-1.5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-[#637588]">Social Media Limit</span>
+                          <span className="text-xs font-medium">45/60m</span>
+                        </div>
+                        <Progress value={75} className="h-1.5" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Top Sites Table */}
+            <Card className="border-0 shadow-md">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl font-bold text-[#111418]">Top Sites</CardTitle>
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
                 </div>
-              </div>
-            </div>
-            <h3 className="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Top sites</h3>
-            <div className="px-4 py-3">
-              <div className="flex overflow-hidden rounded-xl border border-[#dce0e5] bg-white">
-                <table className="flex-1">
-                  <thead>
-                    <tr className="bg-white">
-                      <th className="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Site</th>
-                      <th className="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Time</th>
-                      <th className="px-4 py-3 text-left text-[#111418] w-[400px] text-sm font-medium leading-normal">Visits</th>
-                      <th className="px-4 py-3 text-left text-[#111418] w-60 text-sm font-medium leading-normal">Productive</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Example rows, replace with dynamic data as needed */}
-                    <tr className="border-t border-t-[#dce0e5]">
-                      <td className="h-[72px] px-4 py-2 w-[400px] text-[#111418] text-sm font-normal leading-normal">Twitter.com</td>
-                      <td className="h-[72px] px-4 py-2 w-[400px] text-[#637588] text-sm font-normal leading-normal">2h 15m</td>
-                      <td className="h-[72px] px-4 py-2 w-[400px] text-[#637588] text-sm font-normal leading-normal">5</td>
-                      <td className="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#f0f2f4] text-[#111418] text-sm font-medium leading-normal w-full">
-                          <span className="truncate">No</span>
-                        </button>
-                      </td>
-                    </tr>
-                    {/* ...other rows... */}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-medium">Site</TableHead>
+                      <TableHead className="font-medium">Category</TableHead>
+                      <TableHead className="font-medium">Time Spent</TableHead>
+                      <TableHead className="font-medium">Visits</TableHead>
+                      <TableHead className="font-medium">Productive</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {topWebsites.map((site, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <div className="size-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <span className="text-xs font-bold text-[#637588]">
+                                {site.site.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            {site.site}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="text-xs">
+                            {site.category}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-[#637588]">{site.time}</TableCell>
+                        <TableCell className="text-[#637588]">{site.visits}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={site.productive ? "default" : "destructive"}
+                            className={
+                              site.productive
+                                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                : "bg-red-100 text-red-800 hover:bg-red-200"
+                            }
+                          >
+                            {site.productive ? "Yes" : "No"}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-        <footer className="flex justify-center">
-          <div className="flex max-w-[960px] flex-1 flex-col">
-            <footer className="flex flex-col gap-6 px-5 py-10 text-center">
-              <div className="flex flex-wrap items-center justify-center gap-6">
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">About</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Pricing</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Help</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Docs</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">API</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Jobs</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Privacy</a>
-                <a className="text-[#637588] text-base font-normal leading-normal min-w-40" href="#">Terms</a>
+        </main>
+
+        {/* Footer */}
+        <footer className="border-t border-[#f0f2f4] bg-white px-6 lg:px-10 py-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
+                  <BarChart3 className="size-4 text-white" />
+                </div>
+                <span className="text-[#637588] text-sm">© 2024 BrowseMind. All rights reserved.</span>
               </div>
-              <div className="flex flex-wrap justify-center gap-4">
-                <a href="#">
-                  <div className="text-[#637588]">
-                    {/* Twitter SVG */}
-                  </div>
+              <div className="flex flex-wrap gap-6">
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  About
                 </a>
-                <a href="#">
-                  <div className="text-[#637588]">
-                    {/* Github SVG */}
-                  </div>
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  Pricing
                 </a>
-                <a href="#">
-                  <div className="text-[#637588]">
-                    {/* Linkedin SVG */}
-                  </div>
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  Help
+                </a>
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  API
+                </a>
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  Privacy
+                </a>
+                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
+                  Terms
                 </a>
               </div>
-              <p className="text-[#637588] text-base font-normal leading-normal">@2023 Web Habit Inc.</p>
-            </footer>
+            </div>
           </div>
         </footer>
       </div>
     </div>
-  );
+  )
 }
