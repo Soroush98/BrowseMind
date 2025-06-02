@@ -110,9 +110,30 @@ export default function Login() {
                   }}
                 >
                   <span className="truncate">Continue with Google</span>
-                </button>
-                <button
-                  className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f4] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+                </button>                <button
+                  className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#1877f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                  onClick={async () => {
+                    try {
+                      // Get Facebook OAuth URL
+                      const res = await fetch(DOMAIN + '/api/facebook-auth-url/', {
+                        method: 'GET',
+                        credentials: 'include',
+                      });
+                      if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && data.auth_url) {
+                          // Redirect to Facebook OAuth
+                          window.location.href = data.auth_url;
+                        } else {
+                          alert('Failed to get Facebook auth URL');
+                        }
+                      } else {
+                        alert('Failed to connect to Facebook');
+                      }
+                    } catch (error) {
+                      alert('Error connecting to Facebook');
+                    }
+                  }}
                 >
                   <span className="truncate">Continue with Facebook</span>
                 </button>
