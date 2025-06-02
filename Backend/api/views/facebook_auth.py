@@ -9,7 +9,7 @@ from ..helpers.jwt import users_table, SECRET_KEY
 
 FACEBOOK_APP_ID = os.getenv('FACEBOOK_APP_ID')
 FACEBOOK_APP_SECRET = os.getenv('FACEBOOK_APP_SECRET')
-FACEBOOK_REDIRECT_URI = os.getenv('FACEBOOK_REDIRECT_URI', 'https://browsemind.net/auth/facebook/callback')
+FACEBOOK_REDIRECT_URI = os.getenv('FACEBOOK_REDIRECT_URI')
 
 @csrf_exempt
 def facebook_login_view(request):
@@ -54,10 +54,7 @@ def facebook_login_view(request):
         user = response.get('Item')
         
         if not user:
-            # Create new user
-            import uuid
             users_table.put_item(Item={
-                'id': str(uuid.uuid4()),
                 'email': email,
                 'name': name,
                 'provider': 'facebook',

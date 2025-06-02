@@ -29,12 +29,12 @@ export default function Register() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
+    });    const data = await res.json();
     if (!data.success) {
       setError(data.message || "Registration failed.");
     } else {
-      window.location.href = "/login";
+      // Redirect to check email page
+      window.location.href = `/check-email?email=${encodeURIComponent(email)}`;
     }
   }
 

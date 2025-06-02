@@ -70,12 +70,17 @@ export default function Login() {
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ email, password }),
-                  });
-                  if (res.ok) {
+                  });                  if (res.ok) {
                     
                     window.location.href = '/dashboard';
                   } else {
-                    alert('Login failed');
+                    const errorData = await res.json();
+                    if (errorData.redirect === 'check-email') {
+                      // User needs to confirm email
+                      window.location.href = `/check-email?email=${encodeURIComponent(errorData.email)}`;
+                    } else {
+                      alert(errorData.message || 'Login failed');
+                    }
                   }
                 }}
               >

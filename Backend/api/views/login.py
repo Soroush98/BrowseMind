@@ -27,10 +27,18 @@ def login_view(request):
             return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
 
         import hashlib
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-
+        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()        
         if user.get('password') != hashed_password:
             return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
+
+        # Check if email is confirmed
+        if not user.get('confirmed', False):
+            return JsonResponse({
+                'success': False, 
+                'message': 'Please confirm your email address before logging in',
+                'redirect': 'check-email',
+                'email': email
+            }, status=403)
 
         # Generate JWT token
         import datetime
