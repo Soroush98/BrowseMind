@@ -104,7 +104,7 @@ export default function Login() {
                       } else {
                         alert('Failed to connect to Google');
                       }
-                    } catch (error) {
+                    } catch {
                       alert('Error connecting to Google');
                     }
                   }}

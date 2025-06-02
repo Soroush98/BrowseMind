@@ -145,7 +145,7 @@ export default function Register() {
                       } else {
                         setError('Failed to connect to Google');
                       }
-                    } catch (error) {
+                    } catch {
                       setError('Error connecting to Google');
                     }
                   }}

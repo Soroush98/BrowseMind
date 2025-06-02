@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,8 +15,6 @@ import DashboardHeader from "@/components/DashboardHeader"
 import DashboardFooter from "@/components/DashboardFooter"
 import AuthWrapper from "@/components/AuthWrapper"
 import {
-  BarChart3,
-  Plus,
   Target,
   Clock,
   TrendingUp,
@@ -31,7 +28,6 @@ import {
 
 
 export default function Goals() {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   const goals = [
     {
@@ -141,7 +137,6 @@ export default function Goals() {
               email={email} 
               showNewButton={true}
               newButtonText="New Goal"
-              onNewClick={() => setIsCreateDialogOpen(true)}
             />
 
             <main className="flex-1 px-6 lg:px-10 py-8">

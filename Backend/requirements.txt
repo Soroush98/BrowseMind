@@ -6,3 +6,4 @@ requests
 openai
 django-cors-headers
 djangorestframework
+python-dotenv

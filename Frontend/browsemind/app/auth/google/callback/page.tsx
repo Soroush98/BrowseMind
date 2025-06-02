@@ -1,9 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DOMAIN } from "@/config";
 
-export default function GoogleCallback() {
+function GoogleCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -64,5 +64,22 @@ export default function GoogleCallback() {
         <p className="text-[#637588]">Completing sign in with Google...</p>
       </div>
     </div>
+  );
+}
+
+export default function GoogleCallback() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    }>
+      <GoogleCallbackContent />
+    </Suspense>
   );
 }

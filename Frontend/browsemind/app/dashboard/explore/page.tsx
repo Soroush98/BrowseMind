@@ -1,11 +1,8 @@
 "use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  BarChart3,
   TrendingUp,
   TrendingDown,
   Clock,
@@ -15,8 +12,6 @@ import {
   Target,
   AlertTriangle,
   CheckCircle,
-  Settings,
-  LogOut,
   ArrowRight,
   Calendar,
   Zap,
@@ -27,8 +22,6 @@ import AuthWrapper from "@/components/AuthWrapper"
 
 
 export default function Explore() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
 
   const insights = [
     {
