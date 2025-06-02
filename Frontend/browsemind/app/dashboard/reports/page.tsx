@@ -1,6 +1,5 @@
 "use client"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -12,11 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import DashboardHeader from "@/components/DashboardHeader"
+import DashboardFooter from "@/components/DashboardFooter"
+import AuthWrapper from "@/components/AuthWrapper"
 import {
   BarChart3,
-  Plus,
   Search,
   Filter,
   Download,
@@ -24,17 +24,14 @@ import {
   Clock,
   TrendingUp,
   FileText,
-  Settings,
-  LogOut,
   MoreHorizontal,
   Eye,
   Edit,
   Trash2,
 } from "lucide-react"
+const DOMAIN = "https://api.browsemind.net"
 
 export default function Reports() {
-  const router = useRouter()
-  const [email] = useState("john.doe@example.com")
   const [searchQuery, setSearchQuery] = useState("")
 
   const reports = [
@@ -102,90 +99,17 @@ export default function Reports() {
       color: "bg-orange-100 text-orange-600",
     },
   ]
-
-  const getInitials = (email: string) => {
-    return email
-      .split("@")[0]
-      .split(".")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-  }
-
-  const handleLogout = () => {
-    router.replace("/")
-  }
-
   return (
-    <div className="relative flex min-h-screen flex-col bg-gray-50">
-      <div className="layout-container flex h-full grow flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] bg-white px-6 lg:px-10 py-4 shadow-sm">
-          <div className="flex items-center gap-3 text-[#111418]">
-            <div className="size-8 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded-lg flex items-center justify-center">
-              <BarChart3 className="size-5 text-white" />
-            </div>
-            <h2 className="text-[#111418] text-xl font-bold leading-tight tracking-[-0.015em]">BrowseMind</h2>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <a
-              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
-              href="/dashboard"
-            >
-              Dashboard
-            </a>
-            <a className="text-[#1980e6] text-sm font-medium leading-normal border-b-2 border-[#1980e6] pb-1" href="#">
-              Reports
-            </a>
-            <a
-              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
-              href="/goals"
-            >
-              Goals
-            </a>
-            <a
-              className="text-[#637588] text-sm font-medium leading-normal hover:text-[#1980e6] transition-colors"
-              href="/explore"
-            >
-              Explore
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <Button className="bg-[#1980e6] hover:bg-[#1570d1] text-white">
-              <Plus className="size-4 mr-2" />
-              New Report
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-                    <AvatarFallback className="bg-[#1980e6] text-white">{getInitials(email)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex flex-col space-y-1 p-2">
-                  <p className="text-sm font-medium leading-none">{email}</p>
-                  <p className="text-xs leading-none text-muted-foreground">Free Plan</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
+    <AuthWrapper>
+      {(email) => (
+        <div className="relative flex min-h-screen flex-col bg-gray-50">
+          <div className="layout-container flex h-full grow flex-col">
+            <DashboardHeader 
+              activeTab="reports" 
+              email={email} 
+              showNewButton={true}
+              newButtonText="New Report"
+            />
 
         <main className="flex-1 px-6 lg:px-10 py-8">
           <div className="max-w-7xl mx-auto space-y-8">
@@ -335,40 +259,10 @@ export default function Reports() {
           </div>
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-[#f0f2f4] bg-white px-6 lg:px-10 py-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="size-6 bg-gradient-to-br from-[#1980e6] to-[#0066cc] rounded flex items-center justify-center">
-                  <BarChart3 className="size-4 text-white" />
-                </div>
-                <span className="text-[#637588] text-sm">© 2025 BrowseMind. All rights reserved.</span>
-              </div>
-              <div className="flex flex-wrap gap-6">
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  About
-                </a>
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  Pricing
-                </a>
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  Help
-                </a>
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  API
-                </a>
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  Privacy
-                </a>
-                <a href="#" className="text-[#637588] text-sm hover:text-[#1980e6] transition-colors">
-                  Terms
-                </a>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <DashboardFooter />
       </div>
     </div>
+      )}
+    </AuthWrapper>
   )
 }
