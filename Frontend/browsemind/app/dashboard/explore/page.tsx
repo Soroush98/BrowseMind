@@ -25,7 +25,6 @@ import DashboardHeader from "@/components/DashboardHeader"
 import DashboardFooter from "@/components/DashboardFooter"
 import AuthWrapper from "@/components/AuthWrapper"
 
-const DOMAIN = "https://api.browsemind.net"
 
 export default function Explore() {
   const router = useRouter()

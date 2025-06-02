@@ -38,7 +38,7 @@ def analyze_url(url, html_content):
             f"HTML Content:\n{html_content[:1000]}"
         )
 
-        api_key = os.getenv("LLAMA_API_KEY")
+        api_key = os.environ.get("LLAMA_API_KEY")
         client = OpenAI(
             api_key=api_key,
             base_url="https://api.llmapi.com"

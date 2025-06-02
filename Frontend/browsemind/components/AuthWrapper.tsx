@@ -1,8 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-
-const DOMAIN = "https://api.browsemind.net"
+import { DOMAIN } from "@/config";
 
 interface AuthWrapperProps {
   children: (email: string) => React.ReactNode

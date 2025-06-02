@@ -29,7 +29,7 @@ import {
   Edit,
   Trash2,
 } from "lucide-react"
-const DOMAIN = "https://api.browsemind.net"
+
 
 export default function Reports() {
   const [searchQuery, setSearchQuery] = useState("")

@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { DOMAIN } from "@/config"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,7 +44,7 @@ export default function DashboardHeader({
   }
 
   const handleLogout = async () => {
-    await fetch("https://api.browsemind.net/api/logout/", {
+    await fetch(DOMAIN + "/api/logout/", {
       method: "POST",
       credentials: "include"
     });

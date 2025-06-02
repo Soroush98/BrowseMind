@@ -123,11 +123,32 @@ export default function Register() {
               </button>
             </div>
             {error && <p className="text-red-500 text-sm px-4">{error}</p>}
-            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">or</p>
-            <div className="flex justify-stretch">
+            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">or</p>            <div className="flex justify-stretch">
               <div className="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
                 <button
                   className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f4] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
+                  onClick={async () => {
+                    try {
+                      // Get Google OAuth URL
+                      const res = await fetch(DOMAIN + '/api/google-auth-url/', {
+                        method: 'GET',
+                        credentials: 'include',
+                      });
+                      if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && data.auth_url) {
+                          // Redirect to Google OAuth
+                          window.location.href = data.auth_url;
+                        } else {
+                          setError('Failed to get Google auth URL');
+                        }
+                      } else {
+                        setError('Failed to connect to Google');
+                      }
+                    } catch (error) {
+                      setError('Error connecting to Google');
+                    }
+                  }}
                 >
                   <span className="truncate">Continue with Google</span>
                 </button>

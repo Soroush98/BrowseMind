@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import DashboardHeader from "@/components/DashboardHeader"
 import DashboardFooter from "@/components/DashboardFooter"
 import { Progress } from "@/components/ui/progress"
+import { DOMAIN } from "@/config";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Clock,
@@ -19,7 +20,7 @@ import {
 } from "lucide-react"
 
 // Mock DOMAIN for demo purposes
-const DOMAIN = "https://api.browsemind.net"
+// const DOMAIN = "https://api.browsemind.net"
 
 export default function Dashboard() {
   const router = useRouter()
