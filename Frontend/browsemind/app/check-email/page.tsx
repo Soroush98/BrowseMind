@@ -1,11 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { Mail, Loader } from "lucide-react";
 import { DOMAIN } from "@/config";
 
-export default function CheckEmail() {
+function CheckEmailContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
   const [isResending, setIsResending] = useState(false);
@@ -32,7 +32,7 @@ export default function CheckEmail() {
       } else {
         setMessage(data.message || 'Failed to resend email');
       }
-    } catch (error) {
+    } catch {
       setMessage('Network error occurred');
     } finally {
       setIsResending(false);
@@ -77,7 +77,7 @@ export default function CheckEmail() {
               
               <div className="space-y-3">
                 <p className="text-[#637588]">
-                  We've sent a confirmation link to:
+                  We&apos;ve sent a confirmation link to:
                 </p>
                 {email && (
                   <p className="font-medium text-[#111418] bg-[#f0f2f4] px-4 py-2 rounded-xl">
@@ -91,7 +91,7 @@ export default function CheckEmail() {
               </div>
 
               <div className="space-y-3 pt-6">                <p className="text-sm text-[#637588]">
-                  Didn't receive the email? Check your spam folder or resend the confirmation.
+                  Didn&apos;t receive the email? Check your spam folder or resend the confirmation.
                 </p>
                 
                 {message && (
@@ -132,5 +132,22 @@ export default function CheckEmail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckEmail() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    }>
+      <CheckEmailContent />
+    </Suspense>
   );
 }

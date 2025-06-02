@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DOMAIN } from "@/config";
-import { Mail, CheckCircle, XCircle, Loader } from "lucide-react";
+import { CheckCircle, XCircle, Loader } from "lucide-react";
 
-export default function ConfirmEmail() {
+function ConfirmEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -42,7 +42,7 @@ export default function ConfirmEmail() {
           setStatus('error');
           setMessage(data.message);
         }
-      } catch (error) {
+      } catch {
         setStatus('error');
         setMessage('Network error occurred');
       }
@@ -136,5 +136,22 @@ export default function ConfirmEmail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfirmEmail() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ConfirmEmailContent />
+    </Suspense>
   );
 }
