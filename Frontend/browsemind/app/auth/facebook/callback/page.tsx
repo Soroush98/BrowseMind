@@ -1,16 +1,16 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, Suspense} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DOMAIN } from "@/config";
 
-export default function FacebookCallback() {
+function FacebookCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const handleCallback = async () => {
-      const code = searchParams.get('code');
-      const error = searchParams.get('error');
+    const code = searchParams.get('code');
+    const error = searchParams.get('error');
 
       if (error) {
         console.error('Facebook OAuth error:', error);
@@ -64,5 +64,21 @@ export default function FacebookCallback() {
         <p className="text-[#637588]">Completing sign in with Facebook...</p>
       </div>
     </div>
-  );
+    );
+}
+export default function FacebookCallback() {
+    return (
+        <Suspense fallback={
+    <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="text-center">
+        <div className="mb-4">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+        </div>
+        <p className="text-[#637588]">Completing sign in with Facebook...</p>
+      </div>
+    </div>
+    }>
+    <FacebookCallbackContent />
+    </Suspense>
+    );
 }

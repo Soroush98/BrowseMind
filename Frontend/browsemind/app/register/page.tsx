@@ -172,7 +172,7 @@ export default function Register() {
                       } else {
                         setError('Failed to connect to Facebook');
                       }
-                    } catch (error) {
+                    } catch {
                       setError('Error connecting to Facebook');
                     }
                   }}

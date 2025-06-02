@@ -130,7 +130,7 @@ export default function Login() {
                       } else {
                         alert('Failed to connect to Facebook');
                       }
-                    } catch (error) {
+                    } catch {
                       alert('Error connecting to Facebook');
                     }
                   }}
