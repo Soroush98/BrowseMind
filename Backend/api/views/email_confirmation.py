@@ -29,14 +29,14 @@ def register_view(request):
         if not email or not password:
             return JsonResponse({'success': False, 'message': 'Email and password required'}, status=400)
 
-        # Check if user already exists
+        # Check if a record for this email already exists
         response = users_table.get_item(Key={'email': email})
-        if response.get('Item'):
-            return JsonResponse({'success': False, 'message': 'User already exists'}, status=400)
-
-        # Check if confirmation already pending
-        response = users_table.get_item(Key={'email': email})
-        if response.get('Item'):
+        user = response.get('Item')
+        if user:
+            # If the user is confirmed, registration should be blocked
+            if user.get('confirmed'):
+                return JsonResponse({'success': False, 'message': 'User already exists'}, status=400)
+            # Otherwise a registration is pending confirmation
             return JsonResponse({'success': False, 'message': 'Confirmation email already sent. Please check your email.'}, status=400)
 
         # Generate confirmation token
