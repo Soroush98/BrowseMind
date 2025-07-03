@@ -1,9 +1,29 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { DOMAIN } from "@/config";
 
-export default function Login() {
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const message = searchParams.get('message');
+    
+    if (error) {
+      const errorMessages: { [key: string]: string } = {
+        'oauth_failed': message || 'OAuth authentication failed',
+        'no_code': 'No authorization code received',
+        'login_failed': message || 'Login failed',
+        'request_failed': 'Request failed',
+        'network_error': 'Network error occurred'
+      };
+      
+      setErrorMessage(errorMessages[error] || 'An error occurred');
+    }
+  }, [searchParams]);
   return (
     <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>
       <div className="layout-container flex h-full grow flex-col">
@@ -31,6 +51,13 @@ export default function Login() {
         <div className="px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col w-[512px]  py-5 max-w-[960px] flex-1">
             <h1 className="text-[#111418] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">Sign in to your account</h1>
+            
+            {errorMessage && (
+              <div className="mx-4 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm">{errorMessage}</p>
+              </div>
+            )}
+            
             <p
                 className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline cursor-pointer"
             >
@@ -157,5 +184,22 @@ export default function Login() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

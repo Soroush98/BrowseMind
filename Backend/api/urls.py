@@ -7,7 +7,7 @@ from .views.query import category_listing_view, selector_view
 from .views.session import session_view
 from .views.query import top_websites_view
 from .views.google_auth import google_login_view, google_auth_url_view
-from .views.facebook_auth import facebook_login_view, facebook_auth_url_view
+from .views.facebook_auth import facebook_login_view, facebook_auth_url_view, facebook_config_test_view
 
 urlpatterns = [
     path('login/', login_view, name='login'),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('google-auth-url/', google_auth_url_view, name='google_auth_url'),
     path('facebook-login/', facebook_login_view, name='facebook_login'),
     path('facebook-auth-url/', facebook_auth_url_view, name='facebook_auth_url'),
+    path('facebook-config-test/', facebook_config_test_view, name='facebook_config_test'),
 ]

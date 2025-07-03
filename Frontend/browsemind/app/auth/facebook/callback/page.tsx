@@ -9,12 +9,15 @@ function FacebookCallbackContent() {
 
   useEffect(() => {
     const handleCallback = async () => {
-    const code = searchParams.get('code');
-    const error = searchParams.get('error');
+      const code = searchParams.get('code');
+      const error = searchParams.get('error');
+      const errorDescription = searchParams.get('error_description');
+      const state = searchParams.get('state');
 
       if (error) {
-        console.error('Facebook OAuth error:', error);
-        router.push('/login?error=oauth_failed');
+        console.error('Facebook OAuth error:', error, errorDescription);
+        const errorMessage = errorDescription || error;
+        router.push(`/login?error=oauth_failed&message=${encodeURIComponent(errorMessage)}`);
         return;
       }
 
@@ -30,21 +33,17 @@ function FacebookCallbackContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({ code, state }),
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success) {
-            // Successful login, redirect to dashboard
-            router.push('/dashboard');
-          } else {
-            console.error('Login failed:', data.message);
-            router.push('/login?error=login_failed');
-          }
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          // Successful login, redirect to dashboard
+          router.push('/dashboard');
         } else {
-          console.error('Login request failed');
-          router.push('/login?error=request_failed');
+          console.error('Login failed:', data.message);
+          router.push(`/login?error=login_failed&message=${encodeURIComponent(data.message || 'Login failed')}`);
         }
       } catch (error) {
         console.error('Error during login:', error);
