@@ -1,42 +1,38 @@
-"use client"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { DOMAIN } from "@/config";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthWrapperProps {
-  children: (email: string) => React.ReactNode
+  children: (email: string) => React.ReactNode;
 }
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch(DOMAIN + "/api/session", { credentials: "include" })
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.ok && data.email) {
-            setEmail(data.email)
-            setIsAuthenticated(true)
-          } else {
-            window.location.href = "/"
-          }
-        } else {
-          window.location.href = "/"
-        }
-      } catch {
-        window.location.href = "/"
-      }
+    if (!isLoading && !isAuthenticated) {
+      router.push("/");
     }
-    checkAuth()
-  }, [router])
+  }, [isLoading, isAuthenticated, router]);
 
-  if (!isAuthenticated) {
-    return null // or a loading spinner
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
-  return <>{children(email)}</>
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
+  return <>{children(user)}</>;
 }

@@ -3,40 +3,20 @@ import { useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { Mail, Loader } from "lucide-react";
-import { DOMAIN } from "@/config";
+import { useEmailConfirmation } from "@/hooks/useEmailConfirmation";
 
 function CheckEmailContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email');
-  const [isResending, setIsResending] = useState(false);
-  const [message, setMessage] = useState('');
+  const email = searchParams.get("email");
+  const { resendConfirmation, isLoading } = useEmailConfirmation();
+  const [message, setMessage] = useState("");
 
   const handleResendEmail = async () => {
     if (!email) return;
-    
-    setIsResending(true);
-    setMessage('');
+    setMessage("");
 
-    try {
-      const res = await fetch(DOMAIN + '/api/resend-confirmation/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-      
-      if (data.success) {
-        setMessage('Confirmation email sent successfully!');
-      } else {
-        setMessage(data.message || 'Failed to resend email');
-      }
-    } catch {
-      setMessage('Network error occurred');
-    } finally {
-      setIsResending(false);
-    }
+    const result = await resendConfirmation(email);
+    setMessage(result.message);
   };
 
   return (
@@ -107,10 +87,10 @@ function CheckEmailContent() {
                 <div className="space-y-2">
                   <button
                     onClick={handleResendEmail}
-                    disabled={isResending || !email}
+                    disabled={isLoading || !email}
                     className="bg-[#1980e6] hover:bg-[#1570d1] disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-medium w-full flex items-center justify-center gap-2"
                   >
-                    {isResending ? (
+                    {isLoading ? (
                       <>
                         <Loader className="size-4 animate-spin" />
                         Sending...

@@ -1,14 +1,13 @@
-"use client"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import DashboardHeader from "@/components/DashboardHeader"
-import DashboardFooter from "@/components/DashboardFooter"
-import { Progress } from "@/components/ui/progress"
-import { DOMAIN } from "@/config";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import DashboardHeader from "@/components/DashboardHeader";
+import DashboardFooter from "@/components/DashboardFooter";
+import { Progress } from "@/components/ui/progress";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Clock,
   TrendingUp,
@@ -17,149 +16,87 @@ import {
   Calendar,
   Filter,
   Download,
-} from "lucide-react"
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDashboardData, getDefaultDateRange } from "@/hooks/useDashboardData";
 
-// Mock DOMAIN for demo purposes
-// const DOMAIN = "https://api.browsemind.net"
+// Website categories
+const CATEGORIES = [
+  "news",
+  "social media",
+  "communication",
+  "entertainment",
+  "education",
+  "shopping",
+  "finance",
+  "technology",
+  "health",
+  "travel",
+  "government",
+  "legal",
+  "adult",
+  "religion",
+  "politics",
+  "career",
+  "real estate",
+  "automotive",
+  "food",
+  "lifestyle",
+  "sports",
+  "science",
+  "web services",
+  "email",
+  "illegal",
+];
 
 export default function Dashboard() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [categoryShares, setCategoryShares] = useState<{ [key: string]: number }>({})
-  const [fromDate, setFromDate] = useState("")
-  const [toDate, setToDate] = useState("")
-  type TopWebsite = {
-    site: string
-    category: string
-    time: string
-    visits: number
-    productive: boolean
-  }
-  const [topWebsites, setTopWebsites] = useState<TopWebsite[]>([])
-  const categories = [
-    "news",
-    "social media",
-    "communication",
-    "entertainment",
-    "education",
-    "shopping",
-    "finance",
-    "technology",
-    "health",
-    "travel",
-    "government",
-    "legal",
-    "adult",
-    "religion",
-    "politics",
-    "career",
-    "real estate",
-    "automotive",
-    "food",
-    "lifestyle",
-    "sports",
-    "science",
-    "web services",
-    "email",
-    "illegal",
-  ]
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { categoryShares, topWebsites, fetchCategoryShares, fetchTopWebsites } = useDashboardData();
 
-  // Helper to get ISO string in UTC from local datetime-local input
-  function toUTCISOString(local: string) {
-    if (!local) return ""
-    const d = new Date(local)
-    return d.toISOString()
-  }
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
-  // On page load, check session and fetch default shares
+  // Redirect if not authenticated
   useEffect(() => {
-    async function fetchSessionAndShares() {
-      try {
-        const res = await fetch(DOMAIN + "/api/session", { credentials: "include" })
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.ok && data.email) {
-            setEmail(data.email)
-            // Set default dates (last week to now)
-            const now = new Date()
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            const from = weekAgo.toISOString().slice(0, 16)
-            const to = now.toISOString().slice(0, 16)
-            setFromDate(from)
-            setToDate(to)
-            // Fetch shares
-            const sharesRes = await fetch(DOMAIN + "/api/selector/", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({ from: toUTCISOString(from), to: toUTCISOString(to) }),
-            })
-            if (sharesRes.ok) {
-              const sharesData = await sharesRes.json()
-              if (sharesData.success && sharesData.shares) {
-                setCategoryShares(sharesData.shares)
-              } else {
-                // Set all shares to 0
-                const zeroShares = Object.fromEntries(categories.map((cat) => [cat, 0]))
-                setCategoryShares(zeroShares)
-              }
-            } else {
-              const zeroShares = Object.fromEntries(categories.map((cat) => [cat, 0]))
-              setCategoryShares(zeroShares)
-            }
-          } else {
-            window.location.href = "/"
-          }
-        } else {
-          window.location.href = "/"
-        }
-      } catch {
-        window.location.href = "/"
-      }
+    if (!authLoading && !isAuthenticated) {
+      router.push("/");
     }
-    fetchSessionAndShares()
-  }, [router])
+  }, [authLoading, isAuthenticated, router]);
 
-  // Fetch top websites for the user (all categories)
-  async function fetchTopWebsites() {
-    setTopWebsites([])
-    const from = fromDate
-    const to = toDate
-    const res = await fetch(DOMAIN + "/api/top_websites/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ from: toUTCISOString(from), to: toUTCISOString(to) }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      if (data.success && Array.isArray(data.top_websites) && data.top_websites.length > 0) {
-        setTopWebsites(
-          data.top_websites.map((site: { url: string; total_time: number; visits: number }) => ({
-            site: site.url,
-            // category is not returned by top_websites view
-            time:
-              site.total_time >= 60 * 1000
-                ? `${Math.floor(site.total_time / (60 * 1000))}m ${Math.round((site.total_time % (60 * 1000)) / 1000)}s`
-                : `${Math.round(site.total_time / 1000)}s`,
-            visits: site.visits,
-            productive: false, // can't determine without category
-          }))
-        )
-      } else {
-        setTopWebsites([])
-      }
-    } else {
-      setTopWebsites([])
+  // Initialize dates and fetch data on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      const { from, to } = getDefaultDateRange();
+      setFromDate(from);
+      setToDate(to);
+      fetchCategoryShares(from, to);
+      fetchTopWebsites(from, to);
     }
+  }, [isAuthenticated, fetchCategoryShares, fetchTopWebsites]);
+
+  // Refetch when dates change
+  useEffect(() => {
+    if (fromDate && toDate && isAuthenticated) {
+      fetchCategoryShares(fromDate, toDate);
+      fetchTopWebsites(fromDate, toDate);
+    }
+  }, [fromDate, toDate, isAuthenticated, fetchCategoryShares, fetchTopWebsites]);
+
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mb-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+          </div>
+          <p className="text-[#637588]">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
-  // Fetch top websites on initial load and when date changes
-  useEffect(() => {
-    if (fromDate && toDate) {
-      fetchTopWebsites()
-    }
-  }, [fromDate, toDate])
+  const email = user || "";
 
 
   return (
@@ -300,7 +237,7 @@ export default function Dashboard() {
                       </div>
                     ))}
 
-                    {categories
+                    {CATEGORIES
                       .filter((cat) => !categoryShares[cat])
                       .slice(0, 5)
                       .map((cat) => (

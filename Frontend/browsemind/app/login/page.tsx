@@ -1,31 +1,93 @@
 "use client";
 import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { DOMAIN } from "@/config";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { validateLogin } from "@/lib/validation";
 
 function LoginContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { login, loginWithGoogle, loginWithFacebook, isAuthenticated, isLoading: authLoading } = useAuth();
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Handle OAuth error messages from URL params
   useEffect(() => {
-    const error = searchParams.get('error');
-    const message = searchParams.get('message');
-    
+    const error = searchParams.get("error");
+    const message = searchParams.get("message");
+
     if (error) {
       const errorMessages: { [key: string]: string } = {
-        'oauth_failed': message || 'OAuth authentication failed',
-        'no_code': 'No authorization code received',
-        'login_failed': message || 'Login failed',
-        'request_failed': 'Request failed',
-        'network_error': 'Network error occurred'
+        oauth_failed: message || "OAuth authentication failed",
+        no_code: "No authorization code received",
+        login_failed: message || "Login failed",
+        request_failed: "Request failed",
+        network_error: "Network error occurred",
       };
-      
-      setErrorMessage(errorMessages[error] || 'An error occurred');
+      setErrorMessage(errorMessages[error] || "An error occurred");
     }
   }, [searchParams]);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  const handleLogin = async () => {
+    setErrorMessage("");
+
+    // Validate form
+    const validation = validateLogin(email, password);
+    if (!validation.isValid) {
+      setErrorMessage(validation.error || "Invalid input");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await login(email, password);
+
+      if (result.success) {
+        router.push("/dashboard");
+      } else if (result.redirect === "check-email") {
+        router.push(`/check-email?email=${encodeURIComponent(result.email || email)}`);
+      } else {
+        setErrorMessage(result.message || "Login failed");
+      }
+    } catch {
+      setErrorMessage("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch {
+      setErrorMessage("Error connecting to Google");
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+    } catch {
+      setErrorMessage("Error connecting to Facebook");
+    }
+  };
+
   return (
-    <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>
+    <div
+      className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden"
+      style={{ fontFamily: "Public Sans, Noto Sans, sans-serif" }}
+    >
       <div className="layout-container flex h-full grow flex-col">
         <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] px-10 py-3">
           <div className="flex items-center gap-4 text-[#111418]">
@@ -45,127 +107,80 @@ function LoginContent() {
                 />
               </svg>
             </div>
-            <h2 className="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">BrowseMind</h2>
+            <h2 className="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">
+              BrowseMind
+            </h2>
           </div>
         </header>
         <div className="px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-[512px]  py-5 max-w-[960px] flex-1">
-            <h1 className="text-[#111418] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">Sign in to your account</h1>
-            
+          <div className="layout-content-container flex flex-col w-[512px] py-5 max-w-[960px] flex-1">
+            <h1 className="text-[#111418] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">
+              Sign in to your account
+            </h1>
+
             {errorMessage && (
               <div className="mx-4 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-800 text-sm">{errorMessage}</p>
               </div>
             )}
-            
-            <p
-                className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline cursor-pointer"
-            >
-                <Link href="/register">
-                    Don&apos;t have an account? Register
-                </Link>
+
+            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 underline cursor-pointer">
+              <Link href="/register">Don&apos;t have an account? Register</Link>
             </p>
             <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label className="flex flex-col min-w-40 flex-1">
-                <p className="text-[#111418] text-base font-medium leading-normal pb-2">Email address</p>
+                <p className="text-[#111418] text-base font-medium leading-normal pb-2">
+                  Email address
+                </p>
                 <input
                   placeholder="Email address"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-14 placeholder:text-[#637588] p-[15px] text-base font-normal leading-normal"
-                  defaultValue=""
                 />
               </label>
             </div>
             <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
               <label className="flex flex-col min-w-40 flex-1">
-                <p className="text-[#111418] text-base font-medium leading-normal pb-2">Password</p>
+                <p className="text-[#111418] text-base font-medium leading-normal pb-2">
+                  Password
+                </p>
                 <input
                   placeholder="Password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-14 placeholder:text-[#637588] p-[15px] text-base font-normal leading-normal"
-                  defaultValue=""
                 />
               </label>
             </div>
             <div className="flex px-4 py-3 gap-2">
               <button
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-white text-base font-bold leading-normal tracking-[0.015em]"
-                onClick={async () => {
-                  const email = (document.querySelector('input[placeholder="Email address"]') as HTMLInputElement)?.value;
-                  const password = (document.querySelector('input[placeholder="Password"]') as HTMLInputElement)?.value;
-                  const res = await fetch(DOMAIN + '/api/login/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ email, password }),
-                  });                  if (res.ok) {
-                    
-                    window.location.href = '/dashboard';
-                  } else {
-                    const errorData = await res.json();
-                    if (errorData.redirect === 'check-email') {
-                      // User needs to confirm email
-                      window.location.href = `/check-email?email=${encodeURIComponent(errorData.email)}`;
-                    } else {
-                      alert(errorData.message || 'Login failed');
-                    }
-                  }
-                }}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-white text-base font-bold leading-normal tracking-[0.015em] disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleLogin}
+                disabled={isSubmitting}
               >
-                <span className="truncate">Sign in</span>
+                <span className="truncate">
+                  {isSubmitting ? "Signing in..." : "Sign in"}
+                </span>
               </button>
             </div>
-            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">or</p>            <div className="flex justify-stretch">
+            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              or
+            </p>
+            <div className="flex justify-stretch">
               <div className="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
                 <button
                   className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f4] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
-                  onClick={async () => {
-                    try {
-                      // Get Google OAuth URL
-                      const res = await fetch(DOMAIN + '/api/google-auth-url/', {
-                        method: 'GET',
-                        credentials: 'include',
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        if (data.success && data.auth_url) {
-                          // Redirect to Google OAuth
-                          window.location.href = data.auth_url;
-                        } else {
-                          alert('Failed to get Google auth URL');
-                        }
-                      } else {
-                        alert('Failed to connect to Google');
-                      }
-                    } catch {
-                      alert('Error connecting to Google');
-                    }
-                  }}
+                  onClick={handleGoogleLogin}
                 >
                   <span className="truncate">Continue with Google</span>
-                </button>                <button
+                </button>
+                <button
                   className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#1877f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                  onClick={async () => {
-                    try {
-                      // Get Facebook OAuth URL
-                      const res = await fetch(DOMAIN + '/api/facebook-auth-url/', {
-                        method: 'GET',
-                        credentials: 'include',
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        if (data.success && data.auth_url) {
-                          // Redirect to Facebook OAuth
-                          window.location.href = data.auth_url;
-                        } else {
-                          alert('Failed to get Facebook auth URL');
-                        }
-                      } else {
-                        alert('Failed to connect to Facebook');
-                      }
-                    } catch {
-                      alert('Error connecting to Facebook');
-                    }
-                  }}
+                  onClick={handleFacebookLogin}
                 >
                   <span className="truncate">Continue with Facebook</span>
                 </button>
@@ -173,9 +188,7 @@ function LoginContent() {
             </div>
             <div className="flex px-4 py-3">
               <Link href="/">
-                <button
-                  className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#f0f2f4] text-[#111418] text-base font-bold leading-normal tracking-[0.015em]"
-                >
+                <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#f0f2f4] text-[#111418] text-base font-bold leading-normal tracking-[0.015em]">
                   <span className="truncate">Back to Home</span>
                 </button>
               </Link>
@@ -189,16 +202,18 @@ function LoginContent() {
 
 export default function Login() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="mb-4">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-white">
+          <div className="text-center">
+            <div className="mb-4">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1980e6]"></div>
+            </div>
+            <p className="text-[#637588]">Loading...</p>
           </div>
-          <p className="text-[#637588]">Loading...</p>
         </div>
-      </div>
-    }>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

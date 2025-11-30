@@ -1,55 +1,44 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DOMAIN } from "@/config";
 import { CheckCircle, XCircle, Loader } from "lucide-react";
+import { useEmailConfirmation } from "@/hooks/useEmailConfirmation";
 
 function ConfirmEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  const { confirmEmail } = useEmailConfirmation();
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const confirmEmail = async () => {
-      const token = searchParams.get('token');
-      const email = searchParams.get('email');
+    const handleConfirmEmail = async () => {
+      const token = searchParams.get("token");
+      const email = searchParams.get("email");
 
       if (!token || !email) {
-        setStatus('error');
-        setMessage('Invalid confirmation link');
+        setStatus("error");
+        setMessage("Invalid confirmation link");
         return;
       }
 
-      try {
-        const res = await fetch(DOMAIN + '/api/confirm-email/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ token, email }),
-        });
+      const result = await confirmEmail(email, token);
 
-        const data = await res.json();
-
-        if (data.success) {
-          setStatus('success');
-          setMessage(data.message);
-          // Redirect to login after 3 seconds
-          setTimeout(() => {
-            router.push('/login?confirmed=true');
-          }, 3000);
-        } else {
-          setStatus('error');
-          setMessage(data.message);
-        }
-      } catch {
-        setStatus('error');
-        setMessage('Network error occurred');
+      if (result.success) {
+        setStatus("success");
+        setMessage(result.message);
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          router.push("/login?confirmed=true");
+        }, 3000);
+      } else {
+        setStatus("error");
+        setMessage(result.message);
       }
     };
 
-    confirmEmail();
-  }, [router, searchParams]);
+    handleConfirmEmail();
+  }, [router, searchParams, confirmEmail]);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>

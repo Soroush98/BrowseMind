@@ -1,42 +1,62 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { DOMAIN } from "@/config";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { validateRegistration } from "@/lib/validation";
 
 export default function Register() {
+  const router = useRouter();
+  const { register, loginWithGoogle, loginWithFacebook } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [agree, setAgree] = useState(true);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleRegister() {
     setError("");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
+
+    // Validate form
+    const validation = validateRegistration(email, password, repeatPassword, agree);
+    if (!validation.isValid) {
+      setError(validation.error || "Invalid input");
       return;
     }
-    if (!agree) {
-      setError("You must agree to the Terms of Service and Privacy Policy.");
-      return;
-    }
-    if (password !== repeatPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    const res = await fetch(DOMAIN + "/api/register/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });    const data = await res.json();
-    if (!data.success) {
-      setError(data.message || "Registration failed.");
-    } else {
-      // Redirect to check email page
-      window.location.href = `/check-email?email=${encodeURIComponent(email)}`;
+
+    setIsSubmitting(true);
+    try {
+      const result = await register(email, password);
+
+      if (result.success) {
+        router.push(`/check-email?email=${encodeURIComponent(email)}`);
+      } else {
+        setError(result.message || "Registration failed");
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
     }
   }
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch {
+      setError("Error connecting to Google");
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+    } catch {
+      setError("Error connecting to Facebook");
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style={{ fontFamily: 'Public Sans, Noto Sans, sans-serif' }}>
@@ -116,66 +136,30 @@ export default function Register() {
             </div>
             <div className="flex px-4 py-3 gap-2">
               <button
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-white text-base font-bold leading-normal tracking-[0.015em]"
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#1980e6] text-white text-base font-bold leading-normal tracking-[0.015em] disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleRegister}
+                disabled={isSubmitting}
               >
-                <span className="truncate">Create account</span>
+                <span className="truncate">
+                  {isSubmitting ? "Creating account..." : "Create account"}
+                </span>
               </button>
             </div>
             {error && <p className="text-red-500 text-sm px-4">{error}</p>}
-            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">or</p>            <div className="flex justify-stretch">
+            <p className="text-[#637588] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              or
+            </p>
+            <div className="flex justify-stretch">
               <div className="flex flex-1 gap-3 flex-wrap px-4 py-3 justify-start">
                 <button
                   className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#f0f2f4] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
-                  onClick={async () => {
-                    try {
-                      // Get Google OAuth URL
-                      const res = await fetch(DOMAIN + '/api/google-auth-url/', {
-                        method: 'GET',
-                        credentials: 'include',
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        if (data.success && data.auth_url) {
-                          // Redirect to Google OAuth
-                          window.location.href = data.auth_url;
-                        } else {
-                          setError('Failed to get Google auth URL');
-                        }
-                      } else {
-                        setError('Failed to connect to Google');
-                      }
-                    } catch {
-                      setError('Error connecting to Google');
-                    }
-                  }}
+                  onClick={handleGoogleLogin}
                 >
                   <span className="truncate">Continue with Google</span>
                 </button>
                 <button
                   className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#1877f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                  onClick={async () => {
-                    try {
-                      // Get Facebook OAuth URL
-                      const res = await fetch(DOMAIN + '/api/facebook-auth-url/', {
-                        method: 'GET',
-                        credentials: 'include',
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        if (data.success && data.auth_url) {
-                          // Redirect to Facebook OAuth
-                          window.location.href = data.auth_url;
-                        } else {
-                          setError('Failed to get Facebook auth URL');
-                        }
-                      } else {
-                        setError('Failed to connect to Facebook');
-                      }
-                    } catch {
-                      setError('Error connecting to Facebook');
-                    }
-                  }}
+                  onClick={handleFacebookLogin}
                 >
                   <span className="truncate">Continue with Facebook</span>
                 </button>
