@@ -1,63 +1,65 @@
-import os
+"""
+Login view - thin HTTP layer.
+"""
 import json
-import boto3
-import requests
-import jwt  # Ensure this is PyJWT, not the built-in jwt module
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from ..helpers.jwt import users_table, SECRET_KEY
+
+from ..schemas.auth import LoginRequest
+from ..services.auth_service import (
+    InvalidCredentialsError,
+    EmailNotConfirmedError,
+)
+from ..services.token_service import TokenService
+from ..dependencies import get_auth_service
+
 
 @csrf_exempt
 def login_view(request):
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'message': 'Only POST allowed'}, status=405)
+    """Handle user login requests."""
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "message": "Only POST allowed"}, status=405
+        )
 
     try:
         data = json.loads(request.body)
-        email = data.get('email')
-        password = data.get('password')
+        login_request = LoginRequest.from_dict(data)
 
-        if not email or not password:
-            return JsonResponse({'success': False, 'message': 'Email and password required'}, status=400)
+        auth_service = get_auth_service()
+        token = auth_service.login(login_request)
 
-        response = users_table.get_item(Key={'email': email})
-        user = response.get('Item')
-
-        if not user:
-            return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
-
-        import hashlib
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()        
-        if user.get('password') != hashed_password:
-            return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
-
-        # Check if email is confirmed
-        if not user.get('confirmed', False):
-            return JsonResponse({
-                'success': False, 
-                'message': 'Please confirm your email address before logging in',
-                'redirect': 'check-email',
-                'email': email
-            }, status=403)
-
-        # Generate JWT token
-        import datetime
-        payload = {
-            'email': email,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
-        }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
-        response = JsonResponse({'success': True, 'message': 'Login successful', 'token': token})
+        response = JsonResponse(
+            {"success": True, "message": "Login successful", "token": token}
+        )
         response.set_cookie(
-            key='token',
+            key="token",
             value=token,
             httponly=True,
             secure=True,
-            samesite='None',
-            max_age=7 * 24 * 60 * 60  # 7 days in seconds
+            samesite="None",
+            max_age=TokenService.get_token_expiry_seconds(),
         )
         return response
 
+    except ValueError as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=400)
+
+    except InvalidCredentialsError:
+        return JsonResponse(
+            {"success": False, "message": "Invalid credentials"}, status=401
+        )
+
+    except EmailNotConfirmedError as e:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": str(e),
+                "redirect": "check-email",
+                "email": e.email,
+            },
+            status=403,
+        )
+
     except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+        return JsonResponse({"success": False, "message": str(e)}, status=500)

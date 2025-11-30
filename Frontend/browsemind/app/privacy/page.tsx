@@ -52,7 +52,7 @@ export default function Privacy() {
               <section>
                 <h2 className="text-2xl font-bold mb-4 text-[#1980e6]">1. Introduction</h2>
                 <p className="text-base leading-relaxed mb-4">
-                  BrowseMind ("we," "our," or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web browsing analytics service.
+                  BrowseMind (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web browsing analytics service.
                 </p>
                 <p className="text-base leading-relaxed">
                   By using BrowseMind, you consent to the data practices described in this Privacy Policy.
@@ -215,9 +215,9 @@ export default function Privacy() {
                 </p>
               </section>
 
-              {/* Children's Privacy */}
+              {/* Children Privacy */}
               <section>
-                <h2 className="text-2xl font-bold mb-4 text-[#1980e6]">11. Children's Privacy</h2>
+                <h2 className="text-2xl font-bold mb-4 text-[#1980e6]">11. Children&apos;s Privacy</h2>
                 <p className="text-base leading-relaxed">
                   Our service is not intended for children under 13. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately.
                 </p>

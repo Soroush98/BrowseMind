@@ -52,7 +52,7 @@ export default function Terms() {
               <section>
                 <h2 className="text-2xl font-bold mb-4 text-[#1980e6]">1. Introduction</h2>
                 <p className="text-base leading-relaxed mb-4">
-                  Welcome to BrowseMind ("we," "our," or "us"). These Terms of Service ("Terms") govern your use of our web browsing analytics service, including our website, browser extension, and related services (collectively, the "Service").
+                  Welcome to BrowseMind (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These Terms of Service (&quot;Terms&quot;) govern your use of our web browsing analytics service, including our website, browser extension, and related services (collectively, the &quot;Service&quot;).
                 </p>
                 <p className="text-base leading-relaxed">
                   By accessing or using BrowseMind, you agree to be bound by these Terms. If you disagree with any part of these terms, you may not access the Service.
@@ -149,7 +149,7 @@ export default function Terms() {
               <section>
                 <h2 className="text-2xl font-bold mb-4 text-[#1980e6]">9. Disclaimers</h2>
                 <p className="text-base leading-relaxed">
-                  The Service is provided "as is" without warranties of any kind. We disclaim all warranties, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.
+                  The Service is provided &quot;as is&quot; without warranties of any kind. We disclaim all warranties, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.
                 </p>
               </section>
 
